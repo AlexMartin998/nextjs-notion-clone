@@ -38,7 +38,12 @@ const HomePage = () => {
           </div>
 
           <div className="md:mt-[-90px] sm:w-full w-[750px] flex justify-center items-center mt-[-40px] relative sm:ml-0 ml-[-50px]">
-            <Image src={BANNER} alt="Application Banner" draggable="false" />
+            <Image
+              src={BANNER}
+              alt="Application Banner"
+              draggable="false"
+              className="unselectable"
+            />
             <div className="bottom-0 top-[50%] bg-gradient-to-t dark:from-background left-0 right-0 absolute z-10"></div>
           </div>
         </div>
@@ -85,7 +90,7 @@ const HomePage = () => {
                     src={client.logo}
                     alt={client.alt}
                     width={200}
-                    className="object-contain max-w-none"
+                    className="object-contain max-w-none unselectable"
                     draggable="false"
                   />
                 </div>
@@ -110,7 +115,7 @@ const HomePage = () => {
           <Image
             src={CALENDAR}
             alt="Banner"
-            className="rounded-2xl"
+            className="rounded-2xl unselectable"
             draggable="false"
           />
         </div>
@@ -152,7 +157,11 @@ const HomePage = () => {
                   cardHeader={
                     <div className="flex items-center gap-4">
                       <Avatar>
-                        <AvatarImage src={`/avatars/${index + 1}.png`} />
+                        <AvatarImage
+                          src={`/avatars/${index + 1}.png`}
+                          draggable="false"
+                          className="unselectable"
+                        />
                         <AvatarFallback>AV</AvatarFallback>
                       </Avatar>
 
