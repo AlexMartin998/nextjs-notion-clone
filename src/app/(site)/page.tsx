@@ -1,9 +1,21 @@
+import clsx from 'clsx';
+import { randomUUID } from 'crypto';
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
-import { Button, TitleSection } from '@/components';
 import BANNER from '../../../public/appBanner.png';
 import CALENDAR from '../../../public/cal.png';
-import { CLIENTS } from '../../lib/constants/constants';
+import { CLIENTS, USERS } from '../../lib/constants/constants';
+
+import { CustomCard, TitleSection } from '@/components/landing-page';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  CardDescription,
+  CardTitle,
+} from '@/components/ui';
 
 const HomePage = () => {
   return (
@@ -26,7 +38,7 @@ const HomePage = () => {
           </div>
 
           <div className="md:mt-[-90px] sm:w-full w-[750px] flex justify-center items-center mt-[-40px] relative sm:ml-0 ml-[-50px]">
-            <Image src={BANNER} alt="Application Banner" />
+            <Image src={BANNER} alt="Application Banner" draggable="false" />
             <div className="bottom-0 top-[50%] bg-gradient-to-t dark:from-background left-0 right-0 absolute z-10"></div>
           </div>
         </div>
@@ -62,8 +74,8 @@ const HomePage = () => {
           before:absolute
         "
         >
-          {[...Array(2)].map(arr => (
-            <div key={arr} className="flex flex-nowrap animate-slide">
+          {[...Array(2)].map(() => (
+            <div key={randomUUID()} className="flex flex-nowrap animate-slide">
               {CLIENTS.map(client => (
                 <div
                   key={client.alt}
@@ -74,6 +86,7 @@ const HomePage = () => {
                     alt={client.alt}
                     width={200}
                     className="object-contain max-w-none"
+                    draggable="false"
                   />
                 </div>
               ))}
@@ -84,7 +97,9 @@ const HomePage = () => {
 
       {/* ====== Calendar ====== */}
       <section className="px-4 pt-4 sm:px-6 flex justify-center items-center flex-col relative">
+        {/* bg */}
         <div className="w-[30%] blur-[120px] rounded-full h-32 absolute bg-brand-primaryPurple/50 -z-10 top-22" />
+
         <TitleSection
           title="Keep track of your meetings all in one place"
           subheading="Capture your ideas, thoughts, and meeting notes in a structured and organized manner."
@@ -92,7 +107,75 @@ const HomePage = () => {
         />
 
         <div className="mt-10 max-w-[450px] flex justify-center items-center relative sm:ml-0 rounded-2xl border-8 border-washed-purple-300  border-opacity-10">
-          <Image src={CALENDAR} alt="Banner" className="rounded-2xl" />
+          <Image
+            src={CALENDAR}
+            alt="Banner"
+            className="rounded-2xl"
+            draggable="false"
+          />
+        </div>
+      </section>
+
+      {/* ====== Testimonials ====== */}
+      <section className="relative">
+        {/* bg */}
+        <div className="w-full blur-[120px] rounded-full h-32 absolute bg-brand-primaryPurple/50 -z-100 top-56" />
+
+        <div className="mt-20 px-4 sm:px-6 flex flex-col overflow-x-hidden overflow-visible">
+          <TitleSection
+            title="Trusted by all"
+            subheading="Join thousands of satisfied users who rely on our platform for their 
+            personal and professional productivity needs."
+            pill="Testimonials"
+          />
+
+          {/* Slide */}
+          {[...Array(2)].map((_, index) => (
+            <div
+              key={randomUUID()}
+              className={twMerge(
+                clsx('mt-10 flex flex-nowrap gap-6 self-start', {
+                  'flex-row-reverse': index === 1,
+                  'animate-[slide_250s_linear_infinite]': true,
+                  'animate-[slide_250s_linear_infinite_reverse]': index === 1,
+                  'ml-[100vw]': index === 1,
+                }),
+
+                'hover:paused'
+              )}
+            >
+              {USERS.map((testimonial, index) => (
+                <CustomCard
+                  key={testimonial.name}
+                  className="w-[500px] shrink-0s rounded-xl dark:bg-gradient-to-t dark:from-border dark:to-background"
+                  ///* Card Header
+                  cardHeader={
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarImage src={`/avatars/${index + 1}.png`} />
+                        <AvatarFallback>AV</AvatarFallback>
+                      </Avatar>
+
+                      <div>
+                        <CardTitle className="text-foreground">
+                          {testimonial.name}
+                        </CardTitle>
+                        <CardDescription className="dark:text-washed-purple-800">
+                          {testimonial.name.toLocaleLowerCase()}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  }
+                  ///* Card Content
+                  cardContent={
+                    <p className="dark:text-washed-purple-800">
+                      {testimonial.message}
+                    </p>
+                  }
+                />
+              ))}
+            </div>
+          ))}
         </div>
       </section>
     </>
