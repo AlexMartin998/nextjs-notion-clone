@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation'; // v.13+
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 import LOGO from '../../../../public/cypresslogo.svg';
 
@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { LoginSchema } from '@/lib/helpers';
+import { actionLoginUser } from '@/lib/server-actions';
 
 export type LoginPageProps = {};
 
@@ -43,14 +44,20 @@ const LoginPage: React.FC<LoginPageProps> = () => {
     },
   });
   const {
-    register,
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    reset,
+    formState: { isSubmitting },
   } = form;
 
-  const onLogin = async ({ email, password }: FormData) => {
-    console.log(email, password);
+  const onLogin: SubmitHandler<FormData> = async formData => {
+    const { error } = await actionLoginUser(formData);
+    if (error) {
+      reset();
+      return setSubmitError(error.message);
+    }
+
+    router.replace('/dashboard'); // can't return
   };
 
   return (
