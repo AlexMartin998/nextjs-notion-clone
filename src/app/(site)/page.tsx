@@ -5,7 +5,14 @@ import { twMerge } from 'tailwind-merge';
 
 import BANNER from '../../../public/appBanner.png';
 import CALENDAR from '../../../public/cal.png';
-import { CLIENTS, USERS } from '../../lib/constants/constants';
+import CHECKICON from '../../../public/icons/check.svg';
+import DIAMOND from '../../../public/icons/diamond.svg';
+import {
+  CLIENTS,
+  PRICING_CARDS,
+  PRICING_PLANS,
+  USERS,
+} from '../../lib/constants/constants';
 
 import { CustomCard, TitleSection } from '@/components/landing-page';
 import {
@@ -13,6 +20,7 @@ import {
   AvatarFallback,
   AvatarImage,
   Button,
+  CardContent,
   CardDescription,
   CardTitle,
 } from '@/components/ui';
@@ -102,7 +110,7 @@ const HomePage = () => {
 
       {/* ====== Calendar ====== */}
       <section className="px-4 pt-4 sm:px-6 flex justify-center items-center flex-col relative">
-        {/* bg */}
+        {/* bg - absolute */}
         <div className="w-[30%] blur-[120px] rounded-full h-32 absolute bg-brand-primaryPurple/50 -z-10 top-22" />
 
         <TitleSection
@@ -123,7 +131,7 @@ const HomePage = () => {
 
       {/* ====== Testimonials ====== */}
       <section className="relative">
-        {/* bg */}
+        {/* bg - absolute */}
         <div className="w-full blur-[120px] rounded-full h-32 absolute bg-brand-primaryPurple/50 -z-100 top-56" />
 
         <div className="mt-20 px-4 sm:px-6 flex flex-col overflow-x-hidden overflow-visible">
@@ -139,12 +147,16 @@ const HomePage = () => {
             <div
               key={randomUUID()}
               className={twMerge(
-                clsx('mt-10 flex flex-nowrap gap-6 self-start', {
-                  'flex-row-reverse': index === 1,
-                  'animate-[slide_250s_linear_infinite]': true,
-                  'animate-[slide_250s_linear_infinite_reverse]': index === 1,
-                  'ml-[100vw]': index === 1,
-                }),
+                clsx(
+                  'mt-10 flex flex-nowrap gap-6 self-start',
+                  // conditional styles
+                  {
+                    'flex-row-reverse': index === 1,
+                    'animate-[slide_250s_linear_infinite]': true,
+                    'animate-[slide_250s_linear_infinite_reverse]': index === 1,
+                    'ml-[100vw]': index === 1,
+                  }
+                ),
 
                 'hover:paused'
               )}
@@ -184,6 +196,90 @@ const HomePage = () => {
                 />
               ))}
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ====== Pricing ====== */}
+      <section className="mt-20 px-4 sm:px-6">
+        <TitleSection
+          title="The Perfect Plan For You"
+          subheading="Experience all the benefits of our platform. Select a plan that suits your needs and take your productivity to new heights."
+          pill="Pricing"
+        />
+
+        <div className="flex flex-col-reverse sm:flex-row gap-4 justify-center sm:items-stretch items-center mt-10">
+          {PRICING_CARDS.map(pricingCard => (
+            <CustomCard
+              key={pricingCard.planType}
+              className={clsx(
+                'w-[300px] rounded-2xl dark:bg-black/40 background-blur-3xl relative',
+                // conditional styles
+                {
+                  'border-brand-primaryPurple/70':
+                    pricingCard.planType === PRICING_PLANS.proplan,
+                }
+              )}
+              ///* Header
+              cardHeader={
+                <CardTitle className="text-2xl font-semibold">
+                  {pricingCard.planType === PRICING_PLANS.proplan && (
+                    <>
+                      <div
+                        className="hidden dark:block w-full blur-[120px] rounded-full h-32
+                        absolute bg-brand-primaryPurple/80 -z-10 top-0"
+                      />
+                      <Image
+                        src={DIAMOND}
+                        alt="Pro Plan Icon"
+                        className="absolute top-6 right-6 unselectable"
+                        draggable="false"
+                      />
+                    </>
+                  )}
+                  {pricingCard.planType}
+                </CardTitle>
+              }
+              ///* Content
+              cardContent={
+                <CardContent className="p-0">
+                  <span className="font-normal text-2xl">
+                    ${pricingCard.price}
+                  </span>
+                  {+pricingCard.price > 0 ? (
+                    <span className="dark:text-washed-purple-800 ml-1">
+                      /mo
+                    </span>
+                  ) : (
+                    ''
+                  )}
+                  <p className="dark:text-washed-purple-800">
+                    {pricingCard.description}
+                  </p>
+                  <Button
+                    variant="btn-primary"
+                    className="whitespace-nowrap w-full mt-4"
+                  >
+                    {pricingCard.planType === PRICING_PLANS.proplan
+                      ? 'Go Pro'
+                      : 'Get Started'}
+                  </Button>
+                </CardContent>
+              }
+              ///* Footer
+              cardFooter={
+                <ul className="font-normal flex mb-2 flex-col gap-4">
+                  <small>{pricingCard.highlightFeature}</small>
+                  {/* item list */}
+                  {pricingCard.freatures.map(feature => (
+                    <li key={feature} className="flex items-center gap-2">
+                      <Image src={CHECKICON} alt="Check Icon" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              }
+            />
           ))}
         </div>
       </section>
