@@ -37,7 +37,7 @@ export async function actionSignUpUser({
     email,
     password,
     options: {
-      // email
+      // it calls auth callback route.ts
       emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}api/auth/callback`,
     },
   });

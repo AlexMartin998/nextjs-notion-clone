@@ -34,9 +34,8 @@ type FormData = {
 };
 
 const SignupPage: React.FC<SignupPageProps> = () => {
-  const router = useRouter();
   const [submitError, setSubmitError] = useState('');
-  const [confirmation, setConfirmation] = useState(false);
+  const [emailConfirmationSent, setEmailConfirmationSent] = useState(false);
 
   ////* supabese redirect with params and we can see if an error ocurred
   const searchParams = useSearchParams();
@@ -75,7 +74,7 @@ const SignupPage: React.FC<SignupPageProps> = () => {
       setSubmitError(error.message);
       return form.reset();
     }
-    setConfirmation(true); //TODO: check this logic ???
+    setEmailConfirmationSent(true);
   };
 
   return (
@@ -98,7 +97,7 @@ const SignupPage: React.FC<SignupPageProps> = () => {
         </FormDescription>
 
         {/* ====== Actual form - NO confirm ====== */}
-        {!confirmation && !codeExchangeError && (
+        {!emailConfirmationSent && !codeExchangeError && (
           <>
             {/* ====== Inputs ====== */}
             <FormField
@@ -166,7 +165,7 @@ const SignupPage: React.FC<SignupPageProps> = () => {
         </span>
 
         {/* ====== Comfirmed: email sent ====== */}
-        {(confirmation || codeExchangeError) && (
+        {(emailConfirmationSent || codeExchangeError) && (
           <Alert className={confirmationAndErrorStyles}>
             {!codeExchangeError && <MailCheck className="h-4 w-4" />}
             <AlertTitle>
