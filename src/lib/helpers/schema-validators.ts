@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+////* Auth
 export const LoginSchema = z.object({
   email: z.string().describe('Email').email({ message: 'Invalid Email' }),
   password: z.string().describe('Password').min(1, 'Password is required'),
@@ -22,3 +23,12 @@ export const SignupSchema = z
     message: "Passwords don't match.",
     path: ['confirmPassword'], // set error to confirmPassword
   });
+
+////* Workspace
+export const CreateWorkspaceSchema = z.object({
+  workspaceName: z
+    .string()
+    .describe('Workspace Name')
+    .min(1, 'Workspace name must be min of 1 character'),
+  logo: z.any(),
+});
