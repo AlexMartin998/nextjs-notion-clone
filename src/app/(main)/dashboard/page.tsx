@@ -2,7 +2,7 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
-import { DashboardSetup } from '@/components/dashboard-page';
+import { DashboardSetup } from '@/components/dashboard';
 import db from '@/lib/supabase/db';
 import { getUserSubscriptionStatus } from '@/lib/supabase/queries';
 
