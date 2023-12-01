@@ -1,7 +1,18 @@
 'use server';
 
+import { workspaces } from '../../../migrations/schema';
 import db from './db';
-import { Subscription } from './supabase.types';
+import { Subscription, workspace } from './supabase.types';
+
+export const createWorkspace = async (workspace: workspace) => {
+  try {
+    await db.insert(workspaces).values(workspace);
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error' };
+  }
+};
 
 export const getUserSubscriptionStatus = async (userId: string) => {
   try {
