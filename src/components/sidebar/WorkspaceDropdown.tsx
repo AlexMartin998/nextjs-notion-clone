@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { useCypress } from '@/lib/hooks/useCypress';
 import { workspace } from '@/lib/supabase/supabase.types';
+import SelectedWorkspace from './SelectedWorkspace';
 
 export type WorkspaceDropdownProps = {
   privateWorkspaces: workspace[];
@@ -23,7 +24,7 @@ const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
   const [selectedOption, setSelectedOption] = useState(defaultValue);
   const [isOpen, setIsOpen] = useState(false);
 
-  // set my workspaces to ContextProvider
+  // set my workspaces to ContextProvider. This action must be done in UseClient FC
   useEffect(() => {
     if (!state.workspaces.length) {
       setMyWorkspaces({
@@ -40,7 +41,7 @@ const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
     state.workspaces.length,
   ]);
 
-  ///*
+  ///* handlers
   const handleSelect = (option: workspace) => {
     setSelectedOption(option);
     setIsOpen(false);
@@ -52,7 +53,13 @@ const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
     <div className="relative inline-block text-left">
       {/* ====== Workspace selector ====== */}
       <div>
-        <span onClick={() => setIsOpen(!isOpen)}></span>
+        <span onClick={() => setIsOpen(!isOpen)}>
+          {selectedOption ? (
+            <SelectedWorkspace workspace={selectedOption} />
+          ) : (
+            'Select a workspace'
+          )}
+        </span>
       </div>
     </div>
   );

@@ -59,7 +59,7 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
           privateWorkspaces={privateWorkspaces}
           sharedWorkspaces={sharedWorkspaces}
           collaboratingWorkspaces={collaboratingWorkspaces}
-          //
+          // 
           defaultValue={[
             ...privateWorkspaces,
             ...collaboratingWorkspaces,
