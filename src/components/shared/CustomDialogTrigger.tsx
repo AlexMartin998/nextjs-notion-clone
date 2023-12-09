@@ -34,7 +34,8 @@ const CustomDialogTrigger: React.FC<CustomDialogTriggerProps> = ({
           <DialogTitle>{header}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        {content}
+
+        <div className="pt-5">{content}</div>
       </DialogContent>
     </Dialog>
   );
