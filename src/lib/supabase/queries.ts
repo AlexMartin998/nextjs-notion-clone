@@ -1,12 +1,14 @@
 'use server';
 
-import { eq } from 'drizzle-orm';
+import { and, eq, notExists } from 'drizzle-orm';
 import { validate } from 'uuid';
 
-import { folders, workspaces } from '../../../migrations/schema';
+import { folders, users, workspaces } from '../../../migrations/schema';
 import db from './db';
+import { collaborators } from './schema';
 import { Folder, Subscription, workspace } from './supabase.types';
 
+/////* workspace
 export const createWorkspace = async (workspace: workspace) => {
   try {
     await db.insert(workspaces).values(workspace);
@@ -17,6 +19,38 @@ export const createWorkspace = async (workspace: workspace) => {
   }
 };
 
+export const getPrivateWorkspaces = async (userId: string) => {
+  if (!userId) return [];
+  const privateWorkspaces = (await db
+    .select({
+      id: workspaces.id,
+      createdAt: workspaces.createdAt,
+      workspaceOwner: workspaces.workspaceOwner,
+      title: workspaces.title,
+      iconId: workspaces.iconId,
+      data: workspaces.data,
+      inTrash: workspaces.inTrash,
+      logo: workspaces.logo,
+      bannerUrl: workspaces.bannerUrl,
+    })
+    .from(workspaces)
+    .where(
+      and(
+        notExists(
+          db
+            .select()
+            .from(collaborators)
+            .where(eq(collaborators.workspaceId, workspaces.id))
+        ),
+        eq(workspaces.workspaceOwner, userId)
+      )
+    )) as workspace[];
+  return privateWorkspaces;
+};
+
+
+
+/////* Subscription
 export const getUserSubscriptionStatus = async (userId: string) => {
   try {
     // drizzle orm queries
