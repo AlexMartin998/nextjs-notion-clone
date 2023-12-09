@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import { DM_Sans } from 'next/font/google';
+import { twMerge } from 'tailwind-merge';
 import './globals.css';
 
 import { CypressProvider } from '@/lib/context/cypress/CypressProvider';
+import { AuthUserProvider } from '@/lib/context/supabase/user/AuthUserProvider';
 import { ThemeProvider } from '@/lib/providers/next-theme-provider';
 import db from '@/lib/supabase/db';
-import { twMerge } from 'tailwind-merge';
 
 const inter = DM_Sans({ subsets: ['latin'] });
 db;
@@ -25,7 +26,9 @@ export default function RootLayout({
       <body className={twMerge('bg-background', inter.className)}>
         {/* enableSystem by library */}
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <CypressProvider>{children}</CypressProvider>
+          <CypressProvider>
+            <AuthUserProvider>{children}</AuthUserProvider>
+          </CypressProvider>
         </ThemeProvider>
       </body>
     </html>
