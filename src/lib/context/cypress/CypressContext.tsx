@@ -1,8 +1,15 @@
 'use client';
 
-import { Dispatch, createContext } from 'react';
+import { createContext } from 'react';
 
-import { CypressAction, CypressState } from '.';
+import { WorkspaceDropdownProps } from '@/components/sidebar/WorkspaceDropdown';
+import { CypressState } from './CypressProvider';
+
+// https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys
+export type SetMyWorkspacesProps = Pick<
+  WorkspaceDropdownProps,
+  'privateWorkspaces' | 'sharedWorkspaces' | 'collaboratingWorkspaces'
+>;
 
 interface CypressContextProps {
   state: CypressState;
@@ -10,7 +17,11 @@ interface CypressContextProps {
   // folderId: string | undefined;
   // fileId: string | undefined;
 
-  // dispatch: Dispatch<CypressAction>;
+  setMyWorkspaces: ({
+    privateWorkspaces,
+    sharedWorkspaces,
+    collaboratingWorkspaces,
+  }: SetMyWorkspacesProps) => void;
 }
 
 export const CypressContext = createContext({} as CypressContextProps);
