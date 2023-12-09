@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Sans } from 'next/font/google';
 import './globals.css';
 
+import { CypressProvider } from '@/lib/context/cypress';
 import { ThemeProvider } from '@/lib/providers/next-theme-provider';
 import db from '@/lib/supabase/db';
 import { twMerge } from 'tailwind-merge';
@@ -22,8 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={twMerge('bg-background', inter.className)}>
+        {/* enableSystem by library */}
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          {children}
+          <CypressProvider>{children}</CypressProvider>
         </ThemeProvider>
       </body>
     </html>
