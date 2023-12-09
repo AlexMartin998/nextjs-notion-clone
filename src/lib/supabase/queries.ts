@@ -48,7 +48,27 @@ export const getPrivateWorkspaces = async (userId: string) => {
   return privateWorkspaces;
 };
 
+// get all workspaces where we are collaborating
+export const getCollaboratingWorkspaces = async (userId: string) => {
+  if (!userId) return [];
 
+  const collaboratedWorkspaces = (await db
+    .select({
+      id: workspaces.id,
+      createdAt: workspaces.createdAt,
+      workspaceOwner: workspaces.workspaceOwner,
+      title: workspaces.title,
+      iconId: workspaces.iconId,
+      data: workspaces.data,
+      inTrash: workspaces.inTrash,
+      logo: workspaces.logo,
+      bannerUrl: workspaces.bannerUrl,
+    })
+    .from(users)
+    .innerJoin(collaborators, eq(users.id, collaborators.userId))
+    .innerJoin(workspaces, eq(collaborators.workspaceId, workspaces.id))
+    .where(eq(users.id, userId))) as workspace[];
+};
 
 /////* Subscription
 export const getUserSubscriptionStatus = async (userId: string) => {
