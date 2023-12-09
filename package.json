@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+  
     "pull": "drizzle-kit introspect:pg ",
     "generate": "drizzle-kit generate:pg",
     "drop": "drizzle-kit drop",
