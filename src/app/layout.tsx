@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { DM_Sans } from 'next/font/google';
 import './globals.css';
 
-import { CypressProvider } from '@/lib/context/cypress';
+import { CypressProvider } from '@/lib/context/cypress/CypressProvider';
 import { ThemeProvider } from '@/lib/providers/next-theme-provider';
 import db from '@/lib/supabase/db';
 import { twMerge } from 'tailwind-merge';

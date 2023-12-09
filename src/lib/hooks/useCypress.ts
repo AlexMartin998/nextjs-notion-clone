@@ -2,6 +2,6 @@
 
 import { useContext } from 'react';
 
-import { CypressContext } from '../context/cypress';
+import { CypressContext } from '../context/cypress/CypressContext';
 
 export const useCypress = () => useContext(CypressContext);

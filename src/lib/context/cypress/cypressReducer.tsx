@@ -1,11 +1,14 @@
 'use client';
 
-import { CypressState } from './';
+import { AppWorkspacesType, CypressState } from './CypressProvider';
 
-export type CypressAction = { type: CypressActionType.actionName };
+export type CypressAction = {
+  type: CypressActionType.setWorkspaces;
+  payload: { workspaces: AppWorkspacesType[] };
+};
 
 export enum CypressActionType {
-  actionName = '[Cypress] - ActionName',
+  setWorkspaces = 'SET_WORKSPACES',
 }
 
 export const cypressReducer = (
@@ -13,8 +16,8 @@ export const cypressReducer = (
   action: CypressAction
 ): CypressState => {
   switch (action.type) {
-    case CypressActionType.actionName:
-      return { ...state };
+    case CypressActionType.setWorkspaces:
+      return { ...state, workspaces: action.payload.workspaces };
 
     default:
       return state;
