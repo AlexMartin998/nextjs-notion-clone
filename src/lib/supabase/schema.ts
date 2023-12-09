@@ -8,7 +8,7 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { prices, subscriptionStatus } from '../../../migrations/schema';
+import { prices, subscriptionStatus, users } from '../../../migrations/schema';
 
 ////* Drizzle schemas ara very similar to SQL syntaxs
 
@@ -123,4 +123,23 @@ export const subscriptions = pgTable('subscriptions', {
     withTimezone: true,
     mode: 'string',
   }).default(sql`now()`),
+});
+
+// // workspace collaborators
+export const collaborators = pgTable('collaborators', {
+  id: uuid('id').defaultRandom().primaryKey().notNull(),
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+    mode: 'string',
+  })
+    .defaultNow()
+    .notNull(),
+
+  // relations/associations
+  workspaceId: uuid('workspace_id')
+    .notNull()
+    .references(() => workspaces.id, { onDelete: 'cascade' }),
+  userId: uuid('user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'cascade' }),
 });
