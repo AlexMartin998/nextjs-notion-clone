@@ -6,7 +6,7 @@ import { validate } from 'uuid';
 import { folders, users, workspaces } from '../../../migrations/schema';
 import db from './db';
 import { collaborators } from './schema';
-import { Folder, Subscription, workspace } from './supabase.types';
+import { Folder, Subscription, User, workspace } from './supabase.types';
 
 /////* workspace
 export const createWorkspace = async (workspace: workspace) => {
@@ -109,6 +109,18 @@ export const getUserSubscriptionStatus = async (userId: string) => {
     console.log(error);
     return { data: null, error: `Error` };
   }
+};
+
+/////* Collaborators
+export const addCollaborators = async (users: User[], workspaceId: string) => {
+  users.forEach(async (user: User) => {
+    const userExists = await db.query.collaborators.findFirst({
+      where: (u, { eq }) =>
+        and(eq(u.userId, user.id), eq(u.workspaceId, workspaceId)),
+    });
+    if (!userExists)
+      await db.insert(collaborators).values({ workspaceId, userId: user.id });
+  });
 };
 
 export const getFolders = async (workspaceId: string) => {
