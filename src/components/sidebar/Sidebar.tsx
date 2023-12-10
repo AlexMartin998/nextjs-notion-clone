@@ -10,6 +10,7 @@ import {
   getUserSubscriptionStatus,
 } from '@/lib/supabase/queries';
 import { twMerge } from 'tailwind-merge';
+import { PlanUsage } from '.';
 import WorkspaceDropdown from './WorkspaceDropdown';
 
 export type SidebarProps = {
@@ -59,12 +60,17 @@ const Sidebar: React.FC<SidebarProps> = async ({ params, className }) => {
           privateWorkspaces={privateWorkspaces}
           sharedWorkspaces={sharedWorkspaces}
           collaboratingWorkspaces={collaboratingWorkspaces}
-          // 
+          // selectedOption
           defaultValue={[
             ...privateWorkspaces,
             ...collaboratingWorkspaces,
             ...sharedWorkspaces,
           ].find(workspace => workspace.id === params.workspaceId)}
+        />
+
+        <PlanUsage
+          foldersLength={workspaceFolderData?.length || 0}
+          subscription={subscriptionData}
         />
       </div>
     </aside>
