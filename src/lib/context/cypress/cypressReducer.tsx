@@ -1,14 +1,24 @@
 'use client';
 
-import { AppWorkspacesType, CypressState } from './CypressProvider';
+import {
+  AppFoldersType,
+  AppWorkspacesType,
+  CypressState,
+} from './CypressProvider';
 
-export type CypressAction = {
-  type: CypressActionType.setWorkspaces;
-  payload: { workspaces: AppWorkspacesType[] };
-};
+export type CypressAction =
+  | {
+      type: CypressActionType.setWorkspaces;
+      payload: { workspaces: AppWorkspacesType[] };
+    }
+  | {
+      type: CypressActionType.setFolders;
+      payload: { workspaceId: string; folders: [] | AppFoldersType[] };
+    };
 
 export enum CypressActionType {
   setWorkspaces = 'SET_WORKSPACES',
+  setFolders = 'SET_FOLDERS',
 }
 
 export const cypressReducer = (
@@ -18,6 +28,27 @@ export const cypressReducer = (
   switch (action.type) {
     case CypressActionType.setWorkspaces:
       return { ...state, workspaces: action.payload.workspaces };
+
+    case CypressActionType.setFolders:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+
+              folders: action.payload.folders.sort(
+                (a, b) =>
+                  new Date(a.createdAt).getTime() -
+                  new Date(b.createdAt).getTime()
+              ),
+            };
+          }
+
+          return workspace;
+        }),
+      };
 
     default:
       return state;

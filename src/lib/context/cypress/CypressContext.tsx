@@ -2,6 +2,7 @@
 
 import { createContext } from 'react';
 
+import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
 import { WorkspaceDropdownProps } from '@/components/sidebar/WorkspaceDropdown';
 import { CypressState } from './CypressProvider';
 
@@ -22,6 +23,11 @@ interface CypressContextProps {
     sharedWorkspaces,
     collaboratingWorkspaces,
   }: SetMyWorkspacesProps) => void;
+
+  setFolders: ({
+    workspaceId,
+    workspaceFolders,
+  }: FoldersDropdownListProps) => void;
 }
 
 export const CypressContext = createContext({} as CypressContextProps);

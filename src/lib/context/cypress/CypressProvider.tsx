@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import { useMemo, useReducer } from 'react';
 
+import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
 import { Folder, workspace } from '../../supabase/supabase.types';
 import { CypressContext, SetMyWorkspacesProps } from './CypressContext';
 import { CypressActionType, cypressReducer } from './cypressReducer';
@@ -26,6 +27,16 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
   const [state, dispatch] = useReducer(cypressReducer, CYPRESS_INIT_STATE);
   const pathname = usePathname();
 
+  // keep workspaceId always updated
+  const workspaceId = useMemo(() => {
+    const urlSegments = pathname?.split('/').filter(Boolean);
+    if (urlSegments)
+      if (urlSegments.length > 1) {
+        return urlSegments[1];
+      }
+  }, [pathname]);
+
+  /////* dispatchers
   const setMyWorkspaces = ({
     privateWorkspaces,
     sharedWorkspaces,
@@ -43,17 +54,30 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
-  // keep workspaceId always updated
-  const workspaceId = useMemo(() => {
-    const urlSegments = pathname?.split('/').filter(Boolean);
-    if (urlSegments)
-      if (urlSegments.length > 1) {
-        return urlSegments[1];
-      }
-  }, [pathname]);
+  const setFolders = ({
+    workspaceId,
+    workspaceFolders,
+  }: FoldersDropdownListProps) => {
+    dispatch({
+      type: CypressActionType.setFolders,
+      payload: {
+        workspaceId,
+        folders: workspaceFolders.map(folder => ({
+          ...folder,
+          // add folder files
+          files:
+            state.workspaces
+              .find(workspace => workspace.id === workspaceId)
+              ?.folders.find(f => f.id === folder.id)?.files || [],
+        })),
+      },
+    });
+  };
 
   return (
-    <CypressContext.Provider value={{ state, setMyWorkspaces, workspaceId }}>
+    <CypressContext.Provider
+      value={{ state, workspaceId, setMyWorkspaces, setFolders }}
+    >
       {children}
     </CypressContext.Provider>
   );
