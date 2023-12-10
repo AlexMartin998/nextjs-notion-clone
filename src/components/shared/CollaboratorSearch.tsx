@@ -97,6 +97,7 @@ const CollaboratorSearch: React.FC<CollaboratorSearchProps> = ({
           </div>
         ) : !!searchResults.length ? (
           <ScrollArea className="mt-6 overflow-y-auto w-full rounded-md">
+            {/* filter users already included in collaborators */}
             {searchResults
               .filter(
                 result =>

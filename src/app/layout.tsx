@@ -3,6 +3,7 @@ import { DM_Sans } from 'next/font/google';
 import { twMerge } from 'tailwind-merge';
 import './globals.css';
 
+import { Toaster } from '@/components/ui/toaster';
 import { CypressProvider } from '@/lib/context/cypress/CypressProvider';
 import { AuthUserProvider } from '@/lib/context/supabase/user/AuthUserProvider';
 import { ThemeProvider } from '@/lib/providers/next-theme-provider';
@@ -27,7 +28,10 @@ export default function RootLayout({
         {/* enableSystem by library */}
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <CypressProvider>
-            <AuthUserProvider>{children}</AuthUserProvider>
+            <AuthUserProvider>
+              {children}
+              <Toaster />
+            </AuthUserProvider>
           </CypressProvider>
         </ThemeProvider>
       </body>
