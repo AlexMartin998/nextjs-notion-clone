@@ -93,3 +93,24 @@ body {
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+
+/* ====== Scrollbar ====== */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: 249 45% 3.9%;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #20155a;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #20155a;
+}
