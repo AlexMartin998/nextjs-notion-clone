@@ -164,11 +164,11 @@ const WorkspaceCreator: React.FC<WorkspaceCreatorProps> = () => {
               Collaborators: {collaborators.length || ''}
             </span>
 
-            <ScrollArea className="h-[120px] overflow-y-scroll w-full rounded-md border border-muted-foreground/20">
+            <ScrollArea className="h-[120px] overflow-y-auto w-full rounded-md border border-muted-foreground/20 custom-scrollbar">
               {collaborators.length ? (
                 collaborators.map(collaborator => (
                   <div
-                    className="p-4 flex justify-between items-center"
+                    className="p-4 flex justify-between items-center custom-scrollbar"
                     key={collaborator.id}
                   >
                     <div className="flex gap-4 items-center">
