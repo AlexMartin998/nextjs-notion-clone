@@ -13,7 +13,7 @@ export type SetMyWorkspacesProps = Pick<
 
 interface CypressContextProps {
   state: CypressState;
-  // workspaceId: string | undefined;
+  workspaceId: string | undefined;
   // folderId: string | undefined;
   // fileId: string | undefined;
 

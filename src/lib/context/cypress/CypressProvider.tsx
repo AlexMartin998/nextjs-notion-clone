@@ -1,6 +1,7 @@
 'use client';
 
-import { useReducer } from 'react';
+import { usePathname } from 'next/navigation';
+import { useMemo, useReducer } from 'react';
 
 import { Folder, workspace } from '../../supabase/supabase.types';
 import { CypressContext, SetMyWorkspacesProps } from './CypressContext';
@@ -23,6 +24,7 @@ const CYPRESS_INIT_STATE: CypressState = { workspaces: [] };
 
 export const CypressProvider = ({ children }: CypressProviderProps) => {
   const [state, dispatch] = useReducer(cypressReducer, CYPRESS_INIT_STATE);
+  const pathname = usePathname();
 
   const setMyWorkspaces = ({
     privateWorkspaces,
@@ -41,8 +43,17 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
+  // keep workspaceId always updated
+  const workspaceId = useMemo(() => {
+    const urlSegments = pathname?.split('/').filter(Boolean);
+    if (urlSegments)
+      if (urlSegments.length > 1) {
+        return urlSegments[1];
+      }
+  }, [pathname]);
+
   return (
-    <CypressContext.Provider value={{ state, setMyWorkspaces }}>
+    <CypressContext.Provider value={{ state, setMyWorkspaces, workspaceId }}>
       {children}
     </CypressContext.Provider>
   );
