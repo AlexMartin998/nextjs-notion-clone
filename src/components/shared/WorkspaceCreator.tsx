@@ -1,6 +1,6 @@
 'use client';
 
-import { Lock, Share } from 'lucide-react';
+import { Lock, Plus, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,7 +9,10 @@ import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { WorkspacesPermissions } from '@/lib/interfaces';
 import { addCollaborators, createWorkspace } from '@/lib/supabase/queries';
 import { User, workspace } from '@/lib/supabase/supabase.types';
-import { Input, Label } from '../ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import { CollaboratorSearch } from '.';
+import { Button, Input, Label } from '../ui';
+import { ScrollArea } from '../ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -32,7 +35,7 @@ const WorkspaceCreator: React.FC<WorkspaceCreatorProps> = () => {
   const [collaborators, setCollaborators] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  ///* collaborator handler
+  ///* handlers
   const addCollaborator = (user: User) => {
     setCollaborators([...collaborators, user]);
   };
@@ -57,6 +60,7 @@ const WorkspaceCreator: React.FC<WorkspaceCreatorProps> = () => {
         logo: null,
         bannerUrl: '',
       };
+
       if (permissions === WorkspacesPermissions.private) {
         toast({ title: 'Success', description: 'Created the workspace' });
         await createWorkspace(newWorkspace);
@@ -139,8 +143,77 @@ const WorkspaceCreator: React.FC<WorkspaceCreatorProps> = () => {
         </Select>
       </>
 
-      {/* ====== Permissions ====== */}
-      {permissions === 'shared' && <div></div>}
+      {/* ====== Collaborator Searcher ====== */}
+      {permissions === WorkspacesPermissions.shared && (
+        <div className="pb-2">
+          <CollaboratorSearch
+            existingCollaborators={collaborators}
+            getCollaborator={user => {
+              addCollaborator(user);
+            }}
+          >
+            <Button type="button" className="text-sm mt-4">
+              <Plus />
+              Add Collaborators
+            </Button>
+          </CollaboratorSearch>
+
+          {/* --- Collaborators added --- */}
+          <div className="mt-4">
+            <span className="text-sm text-muted-foreground">
+              Collaborators: {collaborators.length || ''}
+            </span>
+
+            <ScrollArea className="h-[120px] overflow-y-scroll w-full rounded-md border border-muted-foreground/20">
+              {collaborators.length ? (
+                collaborators.map(collaborator => (
+                  <div
+                    className="p-4 flex justify-between items-center"
+                    key={collaborator.id}
+                  >
+                    <div className="flex gap-4 items-center">
+                      <Avatar>
+                        <AvatarImage src="/avatars/7.png" />
+                        <AvatarFallback>PJ</AvatarFallback>
+                      </Avatar>
+                      <div className="text-sm gap-2 text-muted-foreground overflow-hidden overflow-ellipsis sm:w-[300px] w-[140px]">
+                        {collaborator.email}
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="secondary"
+                      onClick={() => removeCollaborator(collaborator)}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ))
+              ) : (
+                <div className="absolute right-0 left-0 top-0 bottom-0 flex justify-center items-center">
+                  <span className="text-muted-foreground text-sm">
+                    You have no collaborators
+                  </span>
+                </div>
+              )}
+            </ScrollArea>
+          </div>
+        </div>
+      )}
+
+      {/* ====== Create Button ====== */}
+      <Button
+        type="button"
+        disabled={
+          !title ||
+          (permissions === 'shared' && !collaborators.length) ||
+          isLoading
+        }
+        variant={'secondary'}
+        onClick={createItem}
+      >
+        Create
+      </Button>
     </div>
   );
 };
