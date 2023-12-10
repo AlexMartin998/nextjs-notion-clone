@@ -36,6 +36,14 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
       }
   }, [pathname]);
 
+  const folderId = useMemo(() => {
+    const urlSegments = pathname?.split('/').filter(Boolean);
+    if (urlSegments)
+      if (urlSegments?.length > 2) {
+        return urlSegments[2];
+      }
+  }, [pathname]);
+
   /////* dispatchers
   const setMyWorkspaces = ({
     privateWorkspaces,
@@ -76,7 +84,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
 
   return (
     <CypressContext.Provider
-      value={{ state, workspaceId, setMyWorkspaces, setFolders }}
+      value={{ state, workspaceId, folderId, setMyWorkspaces, setFolders }}
     >
       {children}
     </CypressContext.Provider>
