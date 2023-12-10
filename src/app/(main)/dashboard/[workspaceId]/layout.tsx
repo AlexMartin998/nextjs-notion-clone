@@ -10,13 +10,13 @@ const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({
   params,
 }) => {
   return (
-    <main className="flex overflow-hidden h-screen w-screen">
+    <div className="flex overflow-hidden h-screen w-screen">
       <Sidebar params={params} />
 
       <div className="dark:boder-Neutrals-12/70 border-l-[1px] w-full relative overflow-scroll">
         {children}
       </div>
-    </main>
+    </div>
   );
 };
 

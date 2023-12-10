@@ -66,7 +66,7 @@ const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
 
       {/* ====== Workspace selector ====== */}
       {isOpen && (
-        <div className="origin-top-right absolute w-full rounded-md shadow-md z-50 h-[190px] bg-black/10 backdrop-blur-lg group border-[1px] border-muted overflow-y-auto custom-scrollbar">
+        <div className="origin-top-right absolute !w-[246px] rounded-md shadow-md z-50 h-[190px] bg-black/10 backdrop-blur-lg group border-[1px] border-muted overflow-y-auto custom-scrollbar">
           <div className="rounded-md flex flex-col">
             <div className="!p-2">
               {/* --- private workspaces --- */}
