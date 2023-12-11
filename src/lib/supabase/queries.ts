@@ -48,6 +48,24 @@ export const getPrivateWorkspaces = async (userId: string) => {
   return privateWorkspaces;
 };
 
+export const updateWorkspace = async (
+  workspace: Partial<workspace>,
+  workspaceId: string
+) => {
+  if (!workspaceId) return;
+
+  try {
+    await db
+      .update(workspaces)
+      .set(workspace)
+      .where(eq(workspaces.id, workspaceId));
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error' };
+  }
+};
+
 // get all workspaces where we are collaborating
 export const getCollaboratingWorkspaces = async (userId: string) => {
   if (!userId) return [];
