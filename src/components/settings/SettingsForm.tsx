@@ -1,7 +1,7 @@
 'use client';
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Briefcase, Lock, Share } from 'lucide-react';
+import { Briefcase, Lock, Plus, Share } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -13,9 +13,22 @@ import {
   WorkspacesPermissions,
 } from '@/lib/interfaces';
 import { useUiStore } from '@/lib/store/ui/ui';
-import { updateWorkspace } from '@/lib/supabase/queries';
+import {
+  addCollaborators,
+  removeCollaborators,
+  updateWorkspace,
+} from '@/lib/supabase/queries';
 import { User, workspace } from '@/lib/supabase/supabase.types';
-import { Input, Label } from '../ui';
+import { CollaboratorSearch } from '../shared';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  Input,
+  Label,
+} from '../ui';
+import { ScrollArea } from '../ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -58,15 +71,35 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
   const isSubscriptionActive =
     subscription?.status === SubscriptionStatusEnum.active;
 
-  //////* collaborators handler
-  // get all collaborators
+  //////* Collaborators handler
+  /// get all collaborators
 
-  // add collaborators
+  /// add collaborators
+  const addCollaborator = async (profile: User) => {
+    if (!workspaceId) return;
+    if (subscription?.status !== 'active' && collaborators.length >= 2)
+      return setOpen(true); // 2 collabs as limit for free plans
 
-  // remove collaborators
+    await addCollaborators([profile], workspaceId);
+    setCollaborators([...collaborators, profile]);
+  };
 
-  /////* workspace handler
-  //// onChange workspace title
+  /// remove collaborators
+  const removeCollaborator = async (user: User) => {
+    if (!workspaceId) return;
+    if (collaborators.length === 1) {
+      setPermissions(WorkspacesPermissions.private);
+    }
+    await removeCollaborators([user], workspaceId);
+
+    setCollaborators(
+      collaborators.filter(collaborator => collaborator.id !== user.id)
+    );
+    router.refresh();
+  };
+
+  /////* Workspace handler
+  /// onChange workspace title
   const workspaceNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!workspaceId || !e.target.value) return;
 
@@ -82,7 +115,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
     }, 610);
   };
 
-  //// onChange logo
+  /// onChange logo
   const onChangeWorkspaceLogo = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -105,7 +138,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
     setUploadingLogo(false);
   };
 
-  //// onChange permissions
+  /// onChange permissions
   const onPermissionsChange = (val: WorkspacesPermissions) => {
     if (val === WorkspacesPermissions.private) return setOpenAlertMessage(true);
 
@@ -213,6 +246,65 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
+
+        {/* ====== permission ====== */}
+        {permissions === 'shared' && (
+          <div>
+            {/* --- Searcher --- */}
+            <CollaboratorSearch
+              existingCollaborators={collaborators}
+              getCollaborator={user => {
+                addCollaborator(user);
+              }}
+            >
+              <Button type="button" className="text-sm mt-4">
+                <Plus />
+                Add Collaborators
+              </Button>
+            </CollaboratorSearch>
+
+            {/* --- Collaborators added --- */}
+            <div className="mt-4">
+              <span className="text-sm text-muted-foreground">
+                Collaborators: {collaborators.length || ''}
+              </span>
+
+              <ScrollArea className="h-[120px] overflow-y-auto w-full rounded-md border border-muted-foreground/20 custom-scrollbar">
+                {collaborators.length ? (
+                  collaborators.map(collaborator => (
+                    <div
+                      className="p-4 flex justify-between items-center custom-scrollbar"
+                      key={collaborator.id}
+                    >
+                      <div className="flex gap-4 items-center">
+                        <Avatar>
+                          <AvatarImage src="/avatars/7.png" />
+                          <AvatarFallback>PJ</AvatarFallback>
+                        </Avatar>
+                        <div className="text-sm gap-2 text-muted-foreground overflow-hidden overflow-ellipsis sm:w-[210px] w-[140px]">
+                          {collaborator.email}
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="secondary"
+                        onClick={() => removeCollaborator(collaborator)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <div className="absolute right-0 left-0 top-0 bottom-0 flex justify-center items-center">
+                    <span className="text-muted-foreground text-sm">
+                      You have no collaborators
+                    </span>
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
+          </div>
+        )}
       </>
     </div>
   );
