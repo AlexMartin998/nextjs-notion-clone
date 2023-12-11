@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useMemo, useReducer } from 'react';
 
 import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
-import { Folder, workspace } from '../../supabase/supabase.types';
+import { File, Folder, workspace } from '../../supabase/supabase.types';
 import {
   AddFolderProps,
   CypressContext,

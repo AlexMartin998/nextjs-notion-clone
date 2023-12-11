@@ -59,17 +59,14 @@ export const cypressReducer = (
       return {
         ...state,
 
-        workspaces: state.workspaces.map(workspace => {
-          return {
-            ...workspace,
+        workspaces: state.workspaces.map(workspace => ({
+          ...workspace,
 
-            folders: [...workspace.folders, action.payload.folder].sort(
-              (a, b) =>
-                new Date(a.createdAt).getTime() -
-                new Date(b.createdAt).getTime()
-            ),
-          };
-        }),
+          folders: [...workspace.folders, action.payload.folder].sort(
+            (a, b) =>
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          ),
+        })),
       };
     default:
       return state;
