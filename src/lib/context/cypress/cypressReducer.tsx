@@ -18,12 +18,21 @@ export type CypressAction =
   | {
       type: CypressActionType.addFolder;
       payload: { workspaceId: string; folder: AppFoldersType };
+    }
+  | {
+      type: CypressActionType.updateFolder;
+      payload: {
+        folder: Partial<AppFoldersType>;
+        workspaceId: string;
+        folderId: string;
+      };
     };
 
 export enum CypressActionType {
   setWorkspaces = 'SET_WORKSPACES',
   setFolders = 'SET_FOLDERS',
   addFolder = 'ADD_FOLDER',
+  updateFolder = 'UPDATE_FOLDER',
 }
 
 export const cypressReducer = (
