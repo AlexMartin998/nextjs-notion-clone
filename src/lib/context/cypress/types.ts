@@ -1,12 +1,17 @@
 import { WorkspaceDropdownProps } from '@/components/sidebar/WorkspaceDropdown';
 import { File, Folder } from '@/lib/supabase/supabase.types';
-import { AppFoldersType } from './CypressProvider';
+import { AppFoldersType, AppWorkspacesType } from './CypressProvider';
 
 // https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys
 export type SetMyWorkspacesProps = Pick<
   WorkspaceDropdownProps,
   'privateWorkspaces' | 'sharedWorkspaces' | 'collaboratingWorkspaces'
 >;
+
+export type UpdateWorkspaceProps = {
+  workspace: Partial<AppWorkspacesType>;
+  workspaceId: string;
+};
 
 export type AddFolderProps = {
   workspaceId: string;
