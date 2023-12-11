@@ -10,6 +10,7 @@ import {
   SetMyWorkspacesProps,
   UpdateFileProps,
   UpdateFolderProps,
+  UpdateWorkspaceProps,
 } from './types';
 
 ////* Context
@@ -24,6 +25,7 @@ interface CypressContextProps {
     sharedWorkspaces,
     collaboratingWorkspaces,
   }: SetMyWorkspacesProps) => void;
+  updateWorkspace: (props: UpdateWorkspaceProps) => void;
 
   setFolders: ({
     workspaceId,

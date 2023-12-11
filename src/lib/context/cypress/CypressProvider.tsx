@@ -14,6 +14,7 @@ import {
   SetMyWorkspacesProps,
   UpdateFileProps,
   UpdateFolderProps,
+  UpdateWorkspaceProps,
 } from './types';
 
 export type AppFoldersType = Folder & { files: File[] | [] };
@@ -61,9 +62,10 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
   }, [pathname]);
 
   ////* effects
-  // set folder files to each folder
+  // fetch & set folder files to each folder
   useEffect(() => {
     if (!folderId || !workspaceId) return;
+
     const fetchFiles = async () => {
       const { error: filesError, data } = await getFiles(folderId);
       if (filesError) {
@@ -93,6 +95,16 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
           ...collaboratingWorkspaces,
         ].map(workspace => ({ ...workspace, folders: [] })),
       },
+    });
+  };
+
+  const updateWorkspace = ({
+    workspace,
+    workspaceId,
+  }: UpdateWorkspaceProps) => {
+    dispatch({
+      type: CypressActionType.updateWorkspaces,
+      payload: { workspace, workspaceId },
     });
   };
 
@@ -160,6 +172,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
         folderId,
 
         setMyWorkspaces,
+        updateWorkspace,
         setFolders,
         addFolder,
         updateFolder,

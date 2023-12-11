@@ -6,12 +6,16 @@ import {
   AppWorkspacesType,
   CypressState,
 } from './CypressProvider';
-import { AddFileProps, UpdateFileProps } from './types';
+import { AddFileProps, UpdateFileProps, UpdateWorkspaceProps } from './types';
 
 export type CypressAction =
   | {
       type: CypressActionType.setWorkspaces;
       payload: { workspaces: AppWorkspacesType[] };
+    }
+  | {
+      type: CypressActionType.updateWorkspaces;
+      payload: UpdateWorkspaceProps;
     }
   | {
       type: CypressActionType.setFolders;
@@ -44,9 +48,12 @@ export type CypressAction =
 
 export enum CypressActionType {
   setWorkspaces = 'SET_WORKSPACES',
+  updateWorkspaces = 'UPDATE_WORKSPACE',
+
   setFolders = 'SET_FOLDERS',
   addFolder = 'ADD_FOLDER',
   updateFolder = 'UPDATE_FOLDER',
+
   setFiles = 'SET_FILES',
   addFile = 'ADD_FILE',
   updateFile = 'UPDATE_FILE',
@@ -57,11 +64,26 @@ export const cypressReducer = (
   action: CypressAction
 ): CypressState => {
   switch (action.type) {
-    /////* Workspaces
+    //////* Workspaces
     case CypressActionType.setWorkspaces:
       return { ...state, workspaces: action.payload.workspaces };
 
-    /////* Folders
+    case CypressActionType.updateWorkspaces:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              ...action.payload.workspace,
+            };
+          }
+          return workspace;
+        }),
+      };
+
+    //////* Folders
     case CypressActionType.setFolders:
       return {
         ...state,
@@ -116,7 +138,7 @@ export const cypressReducer = (
         }),
       };
 
-    /////* Files
+    //////* Files
     case CypressActionType.setFiles:
       return {
         ...state,
