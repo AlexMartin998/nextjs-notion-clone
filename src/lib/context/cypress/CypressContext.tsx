@@ -4,7 +4,7 @@ import { createContext } from 'react';
 
 import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
 import { WorkspaceDropdownProps } from '@/components/sidebar/WorkspaceDropdown';
-import { Folder } from '@/lib/supabase/supabase.types';
+import { File, Folder } from '@/lib/supabase/supabase.types';
 import { AppFoldersType, CypressState } from './CypressProvider';
 
 // https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys
@@ -24,6 +24,14 @@ export type UpdateFolderProps = {
   workspaceId: string;
 };
 
+export type UpdateFileProps = {
+  file: Partial<File>;
+  folderId: string;
+  workspaceId: string;
+  fileId: string;
+};
+
+////* Context
 interface CypressContextProps {
   state: CypressState;
   workspaceId: string | undefined;
@@ -40,10 +48,15 @@ interface CypressContextProps {
     workspaceId,
     workspaceFolders,
   }: FoldersDropdownListProps) => void;
-
   addFolder: ({ workspaceId, newFolder }: AddFolderProps) => void;
-
   updateFolder: ({ folder, folderId, workspaceId }: UpdateFolderProps) => void;
+
+  updateFile: ({
+    file,
+    fileId,
+    folderId,
+    workspaceId,
+  }: UpdateFileProps) => void;
 }
 
 export const CypressContext = createContext({} as CypressContextProps);

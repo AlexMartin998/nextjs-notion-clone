@@ -9,6 +9,7 @@ import {
   AddFolderProps,
   CypressContext,
   SetMyWorkspacesProps,
+  UpdateFileProps,
   UpdateFolderProps,
 } from './CypressContext';
 import { CypressActionType, cypressReducer } from './cypressReducer';
@@ -109,6 +110,13 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
+  const updateFile = (payload: UpdateFileProps) => {
+    dispatch({
+      type: CypressActionType.updateFile,
+      payload,
+    });
+  };
+
   return (
     <CypressContext.Provider
       value={{
@@ -120,6 +128,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
         setFolders,
         addFolder,
         updateFolder,
+        updateFile,
       }}
     >
       {children}

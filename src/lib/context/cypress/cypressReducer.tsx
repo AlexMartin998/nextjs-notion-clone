@@ -1,5 +1,6 @@
 'use client';
 
+import { UpdateFileProps } from './CypressContext';
 import {
   AppFoldersType,
   AppWorkspacesType,
@@ -26,6 +27,10 @@ export type CypressAction =
         workspaceId: string;
         folderId: string;
       };
+    }
+  | {
+      type: CypressActionType.updateFile;
+      payload: UpdateFileProps;
     };
 
 export enum CypressActionType {
@@ -33,6 +38,7 @@ export enum CypressActionType {
   setFolders = 'SET_FOLDERS',
   addFolder = 'ADD_FOLDER',
   updateFolder = 'UPDATE_FOLDER',
+  updateFile = 'UPDATE_FILE',
 }
 
 export const cypressReducer = (
@@ -43,6 +49,7 @@ export const cypressReducer = (
     case CypressActionType.setWorkspaces:
       return { ...state, workspaces: action.payload.workspaces };
 
+    /////* Folders
     case CypressActionType.setFolders:
       return {
         ...state,
@@ -77,6 +84,58 @@ export const cypressReducer = (
           ),
         })),
       };
+
+    case CypressActionType.updateFolder:
+      return {
+        ...state,
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folders: workspace.folders.map(folder => {
+                if (folder.id === action.payload.folderId) {
+                  return { ...folder, ...action.payload.folder };
+                }
+                return folder;
+              }),
+            };
+          }
+          return workspace;
+        }),
+      };
+
+    /////* Files
+    case CypressActionType.updateFile:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folders: workspace.folders.map(folder => {
+                if (folder.id === action.payload.folderId) {
+                  return {
+                    ...folder,
+                    files: folder.files.map(file => {
+                      if (file.id === action.payload.fileId) {
+                        return {
+                          ...file,
+                          ...action.payload.file,
+                        };
+                      }
+                      return file;
+                    }),
+                  };
+                }
+                return folder;
+              }),
+            };
+          }
+          return workspace;
+        }),
+      };
+
     default:
       return state;
   }
