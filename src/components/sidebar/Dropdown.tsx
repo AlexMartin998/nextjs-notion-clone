@@ -319,7 +319,9 @@ const Dropdown: React.FC<DropdownProps> = ({
     >
       <AccordionTrigger
         id={listType}
-        className="hover:no-underline p-2 dark:text-muted-foreground text-sm"
+        className={`hover:no-underline p-2 dark:text-muted-foreground text-sm ${
+          listType === WPListType.file && 'disabled-svg'
+        }`}
         disabled={listType === WPListType.file}
       >
         {/* <div className="hover:no-underline p-2 dark:text-muted-foreground text-sm"> */}
