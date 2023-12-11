@@ -94,9 +94,9 @@ body {
   transform: translate(-50%, -50%);
 }
 
-.disabled-svg svg {
+/* .disabled-svg > svg {
   display: none;
-}
+} */
 
 /* ====== Scrollbar ====== */
 .custom-scrollbar::-webkit-scrollbar {

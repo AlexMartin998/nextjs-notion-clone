@@ -54,10 +54,10 @@ const Dropdown: React.FC<DropdownProps> = ({
   const [isEditing, setIsEditing] = useState(false);
 
   ///* avoid hydratation error (Trigger is a btn)
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // const [isMounted, setIsMounted] = useState(false);
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
 
   ////* Folder Title Synchronized with server data and local
   const folderTitle: string | undefined = useMemo(() => {
@@ -221,6 +221,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   // move to trash
   const moveToTrash = async () => {
     if (!user?.email || !workspaceId) return;
+
     const pathId = id.split(WPListType.folder);
     if (listType === WPListType.folder) {
       updateFolderContext({
@@ -232,18 +233,17 @@ const Dropdown: React.FC<DropdownProps> = ({
         { inTrash: `Deleted by ${user?.email}` },
         pathId[0]
       );
-      if (error) {
-        toast({
+      if (error)
+        return toast({
           title: 'Error',
           variant: 'destructive',
           description: 'Could not move the folder to trash',
         });
-      } else {
-        toast({
-          title: 'Success',
-          description: 'Moved folder to trash',
-        });
-      }
+
+      toast({
+        title: 'Success',
+        description: 'Moved folder to trash',
+      });
     }
 
     if (listType === WPListType.file) {
@@ -303,10 +303,8 @@ const Dropdown: React.FC<DropdownProps> = ({
     [listType]
   );
 
-  // avoid hydratation error
-  if (!isMounted) {
-    return null;
-  }
+  // avoid hydratation error - fixed in accordion shadcn component
+  // if (!isMounted) return null;
 
   return (
     <AccordionItem
@@ -319,9 +317,7 @@ const Dropdown: React.FC<DropdownProps> = ({
     >
       <AccordionTrigger
         id={listType}
-        className={`hover:no-underline p-2 dark:text-muted-foreground text-sm ${
-          listType === WPListType.file && 'disabled-svg'
-        }`}
+        className="hover:no-underline p-2 dark:text-muted-foreground text-sm"
         disabled={listType === WPListType.file}
       >
         {/* <div className="hover:no-underline p-2 dark:text-muted-foreground text-sm"> */}
@@ -353,7 +349,11 @@ const Dropdown: React.FC<DropdownProps> = ({
           </div>
 
           <div className={hoverStyles}>
-            <TooltipComponent message="Delete Folder">
+            <TooltipComponent
+              message={`Delete ${
+                listType === WPListType.folder ? 'Folder' : 'File'
+              }`}
+            >
               <Trash
                 onClick={moveToTrash}
                 size={15}
