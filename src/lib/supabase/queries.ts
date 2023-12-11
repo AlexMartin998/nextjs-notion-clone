@@ -146,7 +146,25 @@ export const addCollaborators = async (users: User[], workspaceId: string) => {
   });
 };
 
+export const getCollaborators = async (workspaceId: string) => {
+  const response = await db
+    .select()
+    .from(collaborators)
+    .where(eq(collaborators.workspaceId, workspaceId));
+  if (!response.length) return [];
 
+  const userInformation: Promise<User | undefined>[] = response.map(
+    async user => {
+      const exists = await db.query.users.findFirst({
+        where: (u, { eq }) => eq(u.id, user.userId),
+      });
+      return exists;
+    }
+  );
+  const resolvedUsers = await Promise.all(userInformation);
+
+  return resolvedUsers.filter(Boolean) as User[];
+};
 
 export const removeCollaborators = async (
   users: User[],
