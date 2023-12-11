@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
+import { WPListType } from '@/lib/interfaces';
 import { createFile, updateFile, updateFolder } from '@/lib/supabase/queries';
 import { File } from '@/lib/supabase/supabase.types';
 import { EmojiPicker, TooltipComponent } from '../shared';
@@ -22,7 +23,7 @@ import { useToast } from '../ui/use-toast';
 export type DropdownProps = {
   title: string;
   id: string;
-  listType: 'folder' | 'file';
+  listType: WPListType.folder | WPListType.file;
   iconId: string;
   children?: React.ReactNode;
   disabled?: boolean;
@@ -60,7 +61,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   ////* Folder Title Synchronized with server data and local
   const folderTitle: string | undefined = useMemo(() => {
-    if (listType === 'folder') {
+    if (listType === WPListType.folder) {
       const stateTitle = state.workspaces
         .find(workspace => workspace.id === workspaceId)
         ?.folders.find(folder => folder.id === id)?.title;
@@ -71,8 +72,8 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   ////* fileItitle
   const fileTitle: string | undefined = useMemo(() => {
-    if (listType === 'file') {
-      const fileAndFolderId = id.split('folder');
+    if (listType === WPListType.file) {
+      const fileAndFolderId = id.split(WPListType.folder);
       const stateTitle = state.workspaces
         .find(workspace => workspace.id === workspaceId)
         ?.folders.find(folder => folder.id === fileAndFolderId[0])
@@ -84,28 +85,30 @@ const Dropdown: React.FC<DropdownProps> = ({
 
   ////* navigate to a != page
   const navigatatePage = (accordionId: string, type: string) => {
-    if (type === 'folder') {
+    if (type === WPListType.folder) {
       router.push(`/dashboard/${workspaceId}/${accordionId}`);
     }
-    if (type === 'file') {
+    if (type === WPListType.file) {
       router.push(
         `/dashboard/${workspaceId}/${folderId}/${
-          accordionId.split('folder')[1]
+          accordionId.split(WPListType.folder)[1]
         }`
       );
     }
   };
 
   ////* handlers
+  // allow to upd folder title
   const handleDoubleClick = () => {
     setIsEditing(true);
   };
 
+  // upd folder title after losing the blur, after doubleClick
   const handleBlur = async () => {
     if (!isEditing) return;
 
     setIsEditing(false);
-    const fId = id.split('folder');
+    const fId = id.split(WPListType.folder);
     if (fId?.length === 1) {
       if (!folderTitle) return;
       toast({
@@ -136,7 +139,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   const onChangeEmoji = async (selectedEmoji: string) => {
     if (!workspaceId) return;
 
-    if (listType === 'folder') {
+    if (listType === WPListType.folder) {
       updateFolderContext({
         workspaceId,
         folderId: id,
@@ -161,7 +164,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   const folderTitleChange = (e: any) => {
     if (!workspaceId) return;
 
-    const fid = id.split('folder');
+    const fid = id.split(WPListType.folder);
     if (fid.length === 1) {
       updateFolderContext({
         folder: { title: e.target.value },
@@ -174,7 +177,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   const fileTitleChange = (e: any) => {
     if (!workspaceId || !folderId) return;
 
-    const fid = id.split('folder');
+    const fid = id.split(WPListType.folder);
     if (fid.length === 2 && fid[1]) {
       updateFileContext({
         file: { title: e.target.value },
@@ -218,8 +221,8 @@ const Dropdown: React.FC<DropdownProps> = ({
   // move to trash
   const moveToTrash = async () => {
     if (!user?.email || !workspaceId) return;
-    const pathId = id.split('folder');
-    if (listType === 'folder') {
+    const pathId = id.split(WPListType.folder);
+    if (listType === WPListType.folder) {
       updateFolderContext({
         folder: { inTrash: `Deleted by ${user?.email}` },
         folderId: pathId[0],
@@ -243,7 +246,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       }
     }
 
-    if (listType === 'file') {
+    if (listType === WPListType.file) {
       updateFileContext({
         file: { inTrash: `Deleted by ${user?.email}` },
         folderId: pathId[0],
@@ -270,7 +273,7 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   ////* styles & identifiers
-  const isFolder = listType === 'folder';
+  const isFolder = listType === WPListType.folder;
   const groupIdentifies = clsx(
     'dark:text-white whitespace-nowrap flex justify-between items-center w-full relative',
     {
@@ -293,8 +296,8 @@ const Dropdown: React.FC<DropdownProps> = ({
       clsx(
         'h-full hidden rounded-sm absolute right-0 items-center justify-center',
         {
-          'group-hover/file:block': listType === 'file',
-          'group-hover/folder:block': listType === 'folder',
+          'group-hover/file:block': listType === WPListType.file,
+          'group-hover/folder:block': listType === WPListType.folder,
         }
       ),
     [listType]
@@ -317,7 +320,7 @@ const Dropdown: React.FC<DropdownProps> = ({
       <AccordionTrigger
         id={listType}
         className="hover:no-underline p-2 dark:text-muted-foreground text-sm"
-        disabled={listType === 'file'}
+        disabled={listType === WPListType.file}
       >
         {/* <div className="hover:no-underline p-2 dark:text-muted-foreground text-sm"> */}
         <div className={groupIdentifies}>
@@ -328,7 +331,7 @@ const Dropdown: React.FC<DropdownProps> = ({
 
             <input
               type="text"
-              value={listType === 'folder' ? folderTitle : fileTitle}
+              value={listType === WPListType.folder ? folderTitle : fileTitle}
               className={clsx(
                 'outline-none overflow-hidden w-[140px] text-Neutrals/neutrals-7',
                 {
@@ -340,7 +343,9 @@ const Dropdown: React.FC<DropdownProps> = ({
               onDoubleClick={handleDoubleClick}
               onBlur={handleBlur}
               onChange={
-                listType === 'folder' ? folderTitleChange : fileTitleChange
+                listType === WPListType.folder
+                  ? folderTitleChange
+                  : fileTitleChange
               }
             />
           </div>
@@ -353,7 +358,7 @@ const Dropdown: React.FC<DropdownProps> = ({
                 className="hover:dark:text-white dark:text-Neutrals/neutrals-7 transition-colors"
               />
             </TooltipComponent>
-            {listType === 'folder' && !isEditing && (
+            {listType === WPListType.folder && !isEditing && (
               <TooltipComponent message="Add File">
                 <PlusIcon
                   onClick={addNewFile}
@@ -379,7 +384,7 @@ const Dropdown: React.FC<DropdownProps> = ({
               <Dropdown
                 key={file.id}
                 title={file.title}
-                listType="file"
+                listType={WPListType.file}
                 id={customFileId}
                 iconId={file.iconId}
               />
