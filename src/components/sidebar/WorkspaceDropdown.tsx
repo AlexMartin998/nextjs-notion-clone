@@ -52,7 +52,7 @@ const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
   useAuthUser();
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left pb-3">
       {/* ====== Workspace selector ====== */}
       <div>
         <span onClick={() => setIsOpen(!isOpen)}>

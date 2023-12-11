@@ -1,5 +1,6 @@
 'use client';
 
+import { File } from '@/lib/supabase/supabase.types';
 import {
   AppFoldersType,
   AppWorkspacesType,
@@ -35,6 +36,10 @@ export type CypressAction =
   | {
       type: CypressActionType.addFile;
       payload: AddFileProps;
+    }
+  | {
+      type: CypressActionType.setFiles;
+      payload: { workspaceId: string; files: File[]; folderId: string };
     };
 
 export enum CypressActionType {
@@ -42,8 +47,9 @@ export enum CypressActionType {
   setFolders = 'SET_FOLDERS',
   addFolder = 'ADD_FOLDER',
   updateFolder = 'UPDATE_FOLDER',
-  updateFile = 'UPDATE_FILE',
+  setFiles = 'SET_FILES',
   addFile = 'ADD_FILE',
+  updateFile = 'UPDATE_FILE',
 }
 
 export const cypressReducer = (
@@ -51,6 +57,7 @@ export const cypressReducer = (
   action: CypressAction
 ): CypressState => {
   switch (action.type) {
+    /////* Workspaces
     case CypressActionType.setWorkspaces:
       return { ...state, workspaces: action.payload.workspaces };
 
@@ -110,6 +117,29 @@ export const cypressReducer = (
       };
 
     /////* Files
+    case CypressActionType.setFiles:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folders: workspace.folders.map(folder => {
+                if (folder.id === action.payload.folderId) {
+                  return {
+                    ...folder,
+                    files: action.payload.files,
+                  };
+                }
+                return folder;
+              }),
+            };
+          }
+          return workspace;
+        }),
+      };
+
     case CypressActionType.addFile:
       return {
         ...state,

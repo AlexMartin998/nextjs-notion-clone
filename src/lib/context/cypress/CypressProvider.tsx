@@ -1,9 +1,10 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useMemo, useReducer } from 'react';
+import { useEffect, useMemo, useReducer } from 'react';
 
 import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
+import { getFiles } from '@/lib/supabase/queries';
 import { File, Folder, workspace } from '../../supabase/supabase.types';
 import { CypressContext } from './CypressContext';
 import { CypressActionType, cypressReducer } from './cypressReducer';
@@ -50,6 +51,32 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
         return urlSegments[2];
       }
   }, [pathname]);
+
+  const fileId = useMemo(() => {
+    const urlSegments = pathname?.split('/').filter(Boolean);
+    if (urlSegments)
+      if (urlSegments?.length > 3) {
+        return urlSegments[3];
+      }
+  }, [pathname]);
+
+  ////* effects
+  // set folder files to each folder
+  useEffect(() => {
+    if (!folderId || !workspaceId) return;
+    const fetchFiles = async () => {
+      const { error: filesError, data } = await getFiles(folderId);
+      if (filesError) {
+        console.log(filesError);
+      }
+      if (!data) return;
+      dispatch({
+        type: CypressActionType.setFiles,
+        payload: { workspaceId, files: data, folderId },
+      });
+    };
+    fetchFiles();
+  }, [folderId, workspaceId]);
 
   /////* dispatchers
   const setMyWorkspaces = ({

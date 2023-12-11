@@ -33,7 +33,7 @@ const PlanUsage: React.FC<PlanUsageProps> = ({
   }, [state, workspaceId]);
 
   return (
-    <article className="mb-4">
+    <article className="mb-5">
       {/* ====== Free plan ====== */}
       {subscription?.status !== SubscriptionEnum.active && (
         <div className="flex gap-2 text-muted-foreground mb-2 items-center">

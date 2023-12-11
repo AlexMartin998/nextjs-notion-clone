@@ -20,7 +20,7 @@ const NativeNavigation: React.FC<NativeNavigationProps> = ({
 }) => {
   return (
     <nav className={twMerge('my-2', className)}>
-      <ul className="flex flex-col gap-2">
+      <ul className="flex flex-col gap-2 pb-2">
         <li>
           <Link
             className="group/native flex text-Neutrals/neutrals-7 transition-all gap-2"
