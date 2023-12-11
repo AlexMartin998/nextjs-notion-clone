@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
+import { WPListType } from '@/lib/interfaces';
 import { useUiStore } from '@/lib/store/ui/ui';
 import { createFolder } from '@/lib/supabase/queries';
 import { Folder } from '@/lib/supabase/supabase.types';
@@ -66,7 +67,7 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
       id: uuidv4(), // folderId
       createdAt: new Date().toISOString(),
       title: 'Untitled',
-      iconId: '📄',
+      iconId: '📁',
       inTrash: null,
       workspaceId,
       bannerUrl: '',
@@ -119,7 +120,7 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
             <Dropdown
               key={folder.id}
               title={folder.title}
-              listType="folder"
+              listType={WPListType.folder}
               id={folder.id}
               iconId={folder.iconId}
             />

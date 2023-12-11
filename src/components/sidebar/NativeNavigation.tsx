@@ -8,6 +8,7 @@ import {
   CypressSettingsIcon,
   CypressTrashIcon,
 } from '../icons';
+import Settings from '../settings/Settings';
 
 export type NativeNavigationProps = {
   myWorkspaceId: string;
@@ -31,10 +32,12 @@ const NativeNavigation: React.FC<NativeNavigationProps> = ({
           </Link>
         </li>
 
-        <li className="group/native flex text-Neutrals/neutrals-7 transition-all gap-2 cursor-pointer">
-          <CypressSettingsIcon />
-          <span>Settings</span>
-        </li>
+        <Settings>
+          <li className="group/native flex text-Neutrals/neutrals-7 transition-all gap-2 cursor-pointer">
+            <CypressSettingsIcon />
+            <span>Settings</span>
+          </li>
+        </Settings>
 
         <li className="group/native flex text-Neutrals/neutrals-7 transition-all gap-2 cursor-pointer">
           <CypressTrashIcon />
