@@ -1,9 +1,9 @@
 'use client';
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Briefcase, Lock, Plus, Share } from 'lucide-react';
+import { Briefcase, Lock, Plus, Share, UserIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
@@ -15,6 +15,7 @@ import {
 import { useUiStore } from '@/lib/store/ui/ui';
 import {
   addCollaborators,
+  getCollaborators,
   removeCollaborators,
   updateWorkspace,
 } from '@/lib/supabase/queries';
@@ -28,6 +29,7 @@ import {
   Input,
   Label,
 } from '../ui';
+import { Alert, AlertDescription } from '../ui/alert';
 import { ScrollArea } from '../ui/scroll-area';
 import {
   Select,
@@ -70,6 +72,27 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
 
   const isSubscriptionActive =
     subscription?.status === SubscriptionStatusEnum.active;
+
+  //////* Effects
+  useEffect(() => {
+    const showingWorkspace = state.workspaces.find(
+      workspace => workspace.id === workspaceId
+    );
+    if (showingWorkspace) setWorkspaceDetails(showingWorkspace);
+  }, [workspaceId, state]);
+
+  useEffect(() => {
+    if (!workspaceId) return;
+
+    const fetchCollaborators = async () => {
+      const response = await getCollaborators(workspaceId);
+      if (response.length) {
+        setPermissions(WorkspacesPermissions.shared);
+        setCollaborators(response);
+      }
+    };
+    fetchCollaborators();
+  }, [workspaceId]);
 
   //////* Collaborators handler
   /// get all collaborators
@@ -140,9 +163,20 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
 
   /// onChange permissions
   const onPermissionsChange = (val: WorkspacesPermissions) => {
-    if (val === WorkspacesPermissions.private) return setOpenAlertMessage(true);
+    if (val === WorkspacesPermissions.private) {
+      setOpenAlertMessage(true); // TODO: check lose collaborators?
+    }
 
     setPermissions(val);
+  };
+
+  /// on delete workspace
+  const onDeleteWorkspace = async () => {
+    if (!workspaceId) return;
+    // await deleteWorkspace(workspaceId);
+    toast({ title: 'Successfully deleted your workspae' });
+    // dispatch({ type: 'DELETE_WORKSPACE', payload: workspaceId });
+    router.replace('/dashboard'); // can't go back
   };
 
   /////* payments
@@ -168,6 +202,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
           </Label>
           <Input
             name="workspaceName"
+            id="workspaceName"
             value={workspaceDetails ? workspaceDetails.title : ''}
             placeholder="Workspace Name"
             onChange={workspaceNameChange}
@@ -184,6 +219,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
           </Label>
           <Input
             name="workspaceLogo"
+            id="workspaceLogo"
             type="file"
             accept="image/*"
             placeholder="Workspace Logo"
@@ -200,19 +236,15 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
         )}
       </div>
 
-      {/* ========= Permissions ========= */}
+      {/* ========= Another settings ========= */}
       <>
-        {/* --- Select workspace premission --- */}
+        {/* ====== permission ====== */}
         <Label htmlFor="permissions" className="pt-2 pb-1">
           Permissions
         </Label>
 
-        <Select
-          onValueChange={val => {
-            setPermissions(val as any);
-          }}
-          defaultValue={permissions}
-        >
+        {/* --- Select workspace premission --- */}
+        <Select onValueChange={onPermissionsChange} value={permissions}>
           <SelectTrigger className="w-full h-26 -mt-3">
             <SelectValue />
           </SelectTrigger>
@@ -247,8 +279,8 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
           </SelectContent>
         </Select>
 
-        {/* ====== permission ====== */}
-        {permissions === 'shared' && (
+        {/* --- Collaborators searcher & collaborators added --- */}
+        {permissions === WorkspacesPermissions.shared && (
           <div>
             {/* --- Searcher --- */}
             <CollaboratorSearch
@@ -263,7 +295,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
               </Button>
             </CollaboratorSearch>
 
-            {/* --- Collaborators added --- */}
+            {/* --- Collaborators List --- */}
             <div className="mt-4">
               <span className="text-sm text-muted-foreground">
                 Collaborators: {collaborators.length || ''}
@@ -305,6 +337,28 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
             </div>
           </div>
         )}
+
+        {/* ====== Alerts ====== */}
+        <Alert variant={'destructive'} className="mt-3">
+          <AlertDescription>
+            Warning! deleting you workspace will permanantly delete all data
+            related to this workspace.
+          </AlertDescription>
+          <Button
+            type="submit"
+            size={'sm'}
+            variant={'destructive'}
+            className="mt-4 text-sm bg-destructive/40 border-2 border-destructive"
+            onClick={onDeleteWorkspace}
+          >
+            Delete Workspace
+          </Button>
+        </Alert>
+
+        {/* --- Alerts --- */}
+        <p className="flex items-center gap-2 mt-6">
+          <UserIcon size={20} /> Profile
+        </p>
       </>
     </div>
   );
