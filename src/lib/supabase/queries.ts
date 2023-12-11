@@ -200,6 +200,22 @@ export const getFolderDetails = async (folderId: string) => {
 };
 
 /////* Files
+export const getFiles = async (folderId: string) => {
+  const isValid = validate(folderId);
+  if (!isValid) return { data: null, error: 'Error' };
+  try {
+    const results = (await db
+      .select()
+      .from(files)
+      .orderBy(files.createdAt)
+      .where(eq(files.folderId, folderId))) as File[] | [];
+    return { data: results, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error' };
+  }
+};
+
 export const createFile = async (file: File) => {
   try {
     await db.insert(files).values(file);
