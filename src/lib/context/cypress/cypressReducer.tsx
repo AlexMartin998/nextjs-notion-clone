@@ -14,11 +14,16 @@ export type CypressAction =
   | {
       type: CypressActionType.setFolders;
       payload: { workspaceId: string; folders: [] | AppFoldersType[] };
+    }
+  | {
+      type: CypressActionType.addFolder;
+      payload: { workspaceId: string; folder: AppFoldersType };
     };
 
 export enum CypressActionType {
   setWorkspaces = 'SET_WORKSPACES',
   setFolders = 'SET_FOLDERS',
+  addFolder = 'ADD_FOLDER',
 }
 
 export const cypressReducer = (
@@ -50,6 +55,22 @@ export const cypressReducer = (
         }),
       };
 
+    case CypressActionType.addFolder:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          return {
+            ...workspace,
+
+            folders: [...workspace.folders, action.payload.folder].sort(
+              (a, b) =>
+                new Date(a.createdAt).getTime() -
+                new Date(b.createdAt).getTime()
+            ),
+          };
+        }),
+      };
     default:
       return state;
   }

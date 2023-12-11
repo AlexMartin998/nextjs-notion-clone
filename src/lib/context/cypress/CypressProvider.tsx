@@ -5,7 +5,11 @@ import { useMemo, useReducer } from 'react';
 
 import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
 import { Folder, workspace } from '../../supabase/supabase.types';
-import { CypressContext, SetMyWorkspacesProps } from './CypressContext';
+import {
+  AddFolderProps,
+  CypressContext,
+  SetMyWorkspacesProps,
+} from './CypressContext';
 import { CypressActionType, cypressReducer } from './cypressReducer';
 
 export type AppFoldersType = Folder & { files: File[] | [] };
@@ -82,9 +86,24 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
+  const addFolder = ({ workspaceId, newFolder }: AddFolderProps) => {
+    dispatch({
+      type: CypressActionType.addFolder,
+      payload: { workspaceId, folder: { ...newFolder, files: [] } },
+    });
+  };
+
   return (
     <CypressContext.Provider
-      value={{ state, workspaceId, folderId, setMyWorkspaces, setFolders }}
+      value={{
+        state,
+        workspaceId,
+        folderId,
+
+        setMyWorkspaces,
+        setFolders,
+        addFolder,
+      }}
     >
       {children}
     </CypressContext.Provider>
