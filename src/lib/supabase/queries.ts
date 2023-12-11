@@ -134,6 +134,7 @@ export const getUsersFromSearch = async (email: string) => {
   return accounts;
 };
 
+/////* Folders
 export const getFolders = async (workspaceId: string) => {
   const isValid = validate(workspaceId);
   if (!isValid)
@@ -150,6 +151,16 @@ export const getFolders = async (workspaceId: string) => {
       .where(eq(folders.workspaceId, workspaceId));
     return { data: results, error: null };
   } catch (error) {
+    return { data: null, error: 'Error' };
+  }
+};
+
+export const createFolder = async (folder: Folder) => {
+  try {
+    await db.insert(folders).values(folder);
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
     return { data: null, error: 'Error' };
   }
 };
