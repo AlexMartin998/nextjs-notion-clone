@@ -165,6 +165,40 @@ export const createFolder = async (folder: Folder) => {
   }
 };
 
+export const updateFolder = async (
+  folder: Partial<Folder>,
+  folderId: string
+) => {
+  try {
+    await db.update(folders).set(folder).where(eq(folders.id, folderId));
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error' };
+  }
+};
+
+export const getFolderDetails = async (folderId: string) => {
+  const isValid = validate(folderId);
+  if (!isValid)
+    return {
+      data: [],
+      error: 'Error',
+    };
+
+  try {
+    const response = (await db
+      .select()
+      .from(folders)
+      .where(eq(folders.id, folderId))
+      .limit(1)) as Folder[];
+
+    return { data: response, error: null };
+  } catch (error) {
+    return { data: [], error: 'Error' };
+  }
+};
+
 /////* Files
 export const createFile = async (file: File) => {
   try {
@@ -176,12 +210,9 @@ export const createFile = async (file: File) => {
   }
 };
 
-export const updateFolder = async (
-  folder: Partial<Folder>,
-  folderId: string
-) => {
+export const updateFile = async (file: Partial<File>, fileId: string) => {
   try {
-    await db.update(folders).set(folder).where(eq(folders.id, folderId));
+    await db.update(files).set(file).where(eq(files.id, fileId));
     return { data: null, error: null };
   } catch (error) {
     console.log(error);
