@@ -113,6 +113,11 @@ export const getSharedWorkspaces = async (userId: string) => {
   return sharedWorkspaces;
 };
 
+export const deleteWorkspace = async (workspaceId: string) => {
+  if (!workspaceId) return;
+  await db.delete(workspaces).where(eq(workspaces.id, workspaceId));
+};
+
 /////* Subscription
 export const getUserSubscriptionStatus = async (userId: string) => {
   try {
@@ -140,6 +145,8 @@ export const addCollaborators = async (users: User[], workspaceId: string) => {
       await db.insert(collaborators).values({ workspaceId, userId: user.id });
   });
 };
+
+
 
 export const removeCollaborators = async (
   users: User[],
