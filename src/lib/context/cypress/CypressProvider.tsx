@@ -5,14 +5,15 @@ import { useMemo, useReducer } from 'react';
 
 import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
 import { File, Folder, workspace } from '../../supabase/supabase.types';
+import { CypressContext } from './CypressContext';
+import { CypressActionType, cypressReducer } from './cypressReducer';
 import {
+  AddFileProps,
   AddFolderProps,
-  CypressContext,
   SetMyWorkspacesProps,
   UpdateFileProps,
   UpdateFolderProps,
-} from './CypressContext';
-import { CypressActionType, cypressReducer } from './cypressReducer';
+} from './types';
 
 export type AppFoldersType = Folder & { files: File[] | [] };
 export type AppWorkspacesType = workspace & {
@@ -117,6 +118,13 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
+  const addFile = (payload: AddFileProps) => {
+    dispatch({
+      type: CypressActionType.addFile,
+      payload,
+    });
+  };
+
   return (
     <CypressContext.Provider
       value={{
@@ -128,6 +136,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
         setFolders,
         addFolder,
         updateFolder,
+        addFile,
         updateFile,
       }}
     >

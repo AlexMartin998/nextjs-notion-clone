@@ -1,11 +1,11 @@
 'use client';
 
-import { UpdateFileProps } from './CypressContext';
 import {
   AppFoldersType,
   AppWorkspacesType,
   CypressState,
 } from './CypressProvider';
+import { AddFileProps, UpdateFileProps } from './types';
 
 export type CypressAction =
   | {
@@ -31,6 +31,10 @@ export type CypressAction =
   | {
       type: CypressActionType.updateFile;
       payload: UpdateFileProps;
+    }
+  | {
+      type: CypressActionType.addFile;
+      payload: AddFileProps;
     };
 
 export enum CypressActionType {
@@ -39,6 +43,7 @@ export enum CypressActionType {
   addFolder = 'ADD_FOLDER',
   updateFolder = 'UPDATE_FOLDER',
   updateFile = 'UPDATE_FILE',
+  addFile = 'ADD_FILE',
 }
 
 export const cypressReducer = (
@@ -105,6 +110,33 @@ export const cypressReducer = (
       };
 
     /////* Files
+    case CypressActionType.addFile:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folders: workspace.folders.map(folder => {
+                if (folder.id === action.payload.folderId) {
+                  return {
+                    ...folder,
+                    files: [...folder.files, action.payload.file].sort(
+                      (a, b) =>
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime()
+                    ),
+                  };
+                }
+                return folder;
+              }),
+            };
+          }
+          return workspace;
+        }),
+      };
+
     case CypressActionType.updateFile:
       return {
         ...state,
