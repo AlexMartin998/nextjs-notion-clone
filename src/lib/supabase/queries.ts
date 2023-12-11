@@ -5,8 +5,8 @@ import { validate } from 'uuid';
 
 import { folders, users, workspaces } from '../../../migrations/schema';
 import db from './db';
-import { collaborators } from './schema';
-import { Folder, Subscription, User, workspace } from './supabase.types';
+import { collaborators, files } from './schema';
+import { File, Folder, Subscription, User, workspace } from './supabase.types';
 
 /////* workspace
 export const createWorkspace = async (workspace: workspace) => {
@@ -158,6 +158,17 @@ export const getFolders = async (workspaceId: string) => {
 export const createFolder = async (folder: Folder) => {
   try {
     await db.insert(folders).values(folder);
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error' };
+  }
+};
+
+/////* Files
+export const createFile = async (file: File) => {
+  try {
+    await db.insert(files).values(file);
     return { data: null, error: null };
   } catch (error) {
     console.log(error);
