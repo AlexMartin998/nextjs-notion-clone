@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { MAX_FOLDERS_FREE_PLAN } from '@/lib/constants/constants';
 import { useCypress } from '@/lib/hooks/useCypress';
-import { SubscriptionEnum } from '@/lib/interfaces';
+import { SubscriptionStatusEnum } from '@/lib/interfaces';
 import { Subscription } from '@/lib/supabase/supabase.types';
 import { CypressDiamondIcon } from '../icons';
 import { Progress } from '../ui/progress';
@@ -35,7 +35,7 @@ const PlanUsage: React.FC<PlanUsageProps> = ({
   return (
     <article className="mb-5">
       {/* ====== Free plan ====== */}
-      {subscription?.status !== SubscriptionEnum.active && (
+      {subscription?.status !== SubscriptionStatusEnum.active && (
         <div className="flex gap-2 text-muted-foreground mb-2 items-center">
           <div className="h-4 w-4">
             <CypressDiamondIcon />
@@ -50,7 +50,7 @@ const PlanUsage: React.FC<PlanUsageProps> = ({
       )}
 
       {/* --- Progress bar --- */}
-      {subscription?.status !== SubscriptionEnum.active && (
+      {subscription?.status !== SubscriptionStatusEnum.active && (
         <Progress value={usagePercentage} className="h-1" />
       )}
     </article>

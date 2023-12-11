@@ -1,3 +1,3 @@
-export enum SubscriptionEnum {
+export enum SubscriptionStatusEnum {
   active = 'active',
 }
