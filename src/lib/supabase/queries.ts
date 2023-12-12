@@ -3,11 +3,11 @@
 import { and, eq, ilike, notExists } from 'drizzle-orm';
 import { validate } from 'uuid';
 
+import { revalidatePath } from 'next/cache';
 import { folders, users, workspaces } from '../../../migrations/schema';
 import db from './db';
 import { collaborators, files } from './schema';
 import { File, Folder, Subscription, User, workspace } from './supabase.types';
-import { revalidatePath } from 'next/cache';
 
 /////* workspace
 export const createWorkspace = async (workspace: workspace) => {
@@ -47,24 +47,6 @@ export const getPrivateWorkspaces = async (userId: string) => {
       )
     )) as workspace[];
   return privateWorkspaces;
-};
-
-export const updateWorkspace = async (
-  workspace: Partial<workspace>,
-  workspaceId: string
-) => {
-  if (!workspaceId) return;
-
-  try {
-    await db
-      .update(workspaces)
-      .set(workspace)
-      .where(eq(workspaces.id, workspaceId));
-    return { data: null, error: null };
-  } catch (error) {
-    console.log(error);
-    return { data: null, error: 'Error' };
-  }
 };
 
 // get all workspaces where we are collaborating
@@ -112,6 +94,45 @@ export const getSharedWorkspaces = async (userId: string) => {
     .where(eq(workspaces.workspaceOwner, userId))) as workspace[];
 
   return sharedWorkspaces;
+};
+
+export const getWorkspaceDetails = async (workspaceId: string) => {
+  const isValid = validate(workspaceId);
+  if (!isValid)
+    return {
+      data: [],
+      error: 'Error',
+    };
+
+  try {
+    const response = (await db
+      .select()
+      .from(workspaces)
+      .where(eq(workspaces.id, workspaceId))
+      .limit(1)) as workspace[];
+    return { data: response, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: [], error: 'Error' };
+  }
+};
+
+export const updateWorkspace = async (
+  workspace: Partial<workspace>,
+  workspaceId: string
+) => {
+  if (!workspaceId) return;
+
+  try {
+    await db
+      .update(workspaces)
+      .set(workspace)
+      .where(eq(workspaces.id, workspaceId));
+    return { data: null, error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: null, error: 'Error' };
+  }
 };
 
 export const deleteWorkspace = async (workspaceId: string) => {
