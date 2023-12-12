@@ -1,6 +1,5 @@
 'use client';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -12,21 +11,18 @@ import {
   updateFolder,
   updateWorkspace,
 } from '@/lib/supabase/queries';
-import { Input, Label } from '../ui';
+import { z } from 'zod';
+import { Loader } from '../shared';
+import { Button, Input, Label } from '../ui';
 
 export type BannerUploadFormProps = {
   dirType: WPDirType;
   id: string;
 };
 
-type FormData = {
-  banner: string;
-};
-
 const BannerUploadForm: React.FC<BannerUploadFormProps> = ({ dirType, id }) => {
   const supabase = createClientComponentClient();
   const {
-    state,
     workspaceId,
     folderId,
     updateFile: updateFileContext,
@@ -35,27 +31,30 @@ const BannerUploadForm: React.FC<BannerUploadFormProps> = ({ dirType, id }) => {
   } = useCypress();
 
   ///*  Form
-  const form = useForm<FormData>({
+  const form = useForm<z.infer<typeof UploadBannerFormSchema>>({
     mode: 'onChange',
-    resolver: zodResolver(UploadBannerFormSchema),
+    defaultValues: {
+      banner: '',
+    },
   });
 
   const {
-    control,
     handleSubmit,
-    reset,
     register,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = form;
 
-  const onSubmit: SubmitHandler<FormData> = async formData => {
-    const file = formData.banner?.[0];
+  const onSubmitHandler: SubmitHandler<
+    z.infer<typeof UploadBannerFormSchema>
+  > = async values => {
+    const file = values.banner?.[0];
     if (!file || !id) return;
 
     try {
       let filePath = null;
 
       const uploadBanner = async () => {
+        // todo: delete prev img and upload this one
         const { data, error } = await supabase.storage
           .from('file-banners')
           .upload(`banner-${id}`, file, { cacheControl: '5', upsert: true });
@@ -99,7 +98,10 @@ const BannerUploadForm: React.FC<BannerUploadFormProps> = ({ dirType, id }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+    <form
+      onSubmit={handleSubmit(onSubmitHandler)}
+      className="flex flex-col gap-2"
+    >
       {/* ------ Upload image ------ */}
       <Label className="text-sm text-muted-foreground" htmlFor="bannerImage">
         Banner Image
@@ -111,8 +113,14 @@ const BannerUploadForm: React.FC<BannerUploadFormProps> = ({ dirType, id }) => {
         disabled={isSubmitting}
         {...register('banner', { required: 'Banner Image is required' })}
       />
+      <small className="text-red-600">
+        {errors.banner?.message?.toString()}
+      </small>
 
-      {/* ------ s ------ */}
+      {/* ------ submit btn ------ */}
+      <Button disabled={isSubmitting} type="submit">
+        {!isSubmitting ? 'Upload Banner' : <Loader />}
+      </Button>
     </form>
   );
 };
