@@ -9,16 +9,18 @@ import 'quill/dist/quill.snow.css';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
-import { SupabaseStorage, WPListType } from '@/lib/interfaces';
+import { SupabaseStorage, WPDirType, WPListType } from '@/lib/interfaces';
 import {
   deleteFile,
   deleteFolder,
   findUser,
   updateFile,
   updateFolder,
+  updateWorkspace,
 } from '@/lib/supabase/queries';
 import { File, Folder, workspace } from '@/lib/supabase/supabase.types';
 import Image from 'next/image';
+import { EmojiPicker } from '../shared';
 import { Avatar, AvatarFallback, AvatarImage, Button } from '../ui';
 import { Badge } from '../ui/badge';
 import {
@@ -292,6 +294,42 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     }
   };
 
+  const iconOnChange = async (icon: string) => {
+    if (!fileId) return;
+
+    if (dirType === WPDirType.workspace) {
+      // dispatch({
+      //   type: 'UPDATE_WORKSPACE',
+      //   payload: { workspace: { iconId: icon }, workspaceId: fileId },
+      // });
+      await updateWorkspace({ iconId: icon }, fileId);
+    }
+
+    if (dirType === WPDirType.folder) {
+      if (!workspaceId) return;
+
+      // dispatch({
+      //   type: 'UPDATE_FOLDER',
+      //   payload: {
+      //     folder: { iconId: icon },
+      //     workspaceId,
+      //     folderId: fileId,
+      //   },
+      // });
+      await updateFolder({ iconId: icon }, fileId);
+    }
+
+    if (dirType === WPDirType.file) {
+      if (!workspaceId || !folderId) return;
+
+      // dispatch({
+      //   type: 'UPDATE_FILE',
+      //   payload: { file: { iconId: icon }, workspaceId, folderId, fileId },
+      // });
+      await updateFile({ iconId: icon }, fileId);
+    }
+  };
+
   return (
     <>
       <div className="relative">
@@ -392,7 +430,24 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
         </div>
       )}
 
+      {/* ========== Quill Editor ========== */}
       <div className="flex justify-center items-center flex-col mt-2 relative">
+        <div className="w-full self-center max-w-[800px] flex flex-col px-7 lg:my-8">
+          {/* ------ Emoji Picker ------  */}
+          <div className="text-[80px]">
+            <EmojiPicker getValue={iconOnChange}>
+              <div className="w-[100px] cursor-pointer transition-colors h-[100px] flex items-center justify-center hover:bg-muted rounded-xl">
+                {details.iconId}
+              </div>
+            </EmojiPicker>
+          </div>
+
+          {/* ------ Banner Uploader ------  */}
+
+          {/* ------ s ------  */}
+        </div>
+
+        {/* ======= Quill Editor ======= */}
         <div id="container" className="max-w-[800px]" ref={wrapperRef}></div>
       </div>
     </>

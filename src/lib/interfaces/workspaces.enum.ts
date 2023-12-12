@@ -8,3 +8,9 @@ export enum WPListType {
   file = 'file',
   workspace = 'workspace',
 }
+
+export enum WPDirType {
+  folder = 'folder',
+  file = 'file',
+  workspace = 'workspace',
+}
