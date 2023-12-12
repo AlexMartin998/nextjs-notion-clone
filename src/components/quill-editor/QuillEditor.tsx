@@ -512,7 +512,13 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
             )}
           </div>
 
-          {/* ------ s ------ */}
+          {/* ------ Some details ------ */}
+          <span className="text-muted-foreground text-3xl font-bold h-9 mt-5 mb-3">
+            {details.title}
+          </span>
+          <span className="text-muted-foreground text-sm">
+            {dirType.toUpperCase()}
+          </span>
         </div>
 
         {/* ======= Quill Editor ======= */}
