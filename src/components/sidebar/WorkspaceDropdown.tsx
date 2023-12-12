@@ -36,12 +36,16 @@ const WorkspaceDropdown: React.FC<WorkspaceDropdownProps> = ({
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    collaboratingWorkspaces,
-    privateWorkspaces,
-    sharedWorkspaces,
-    state,
-  ]);
+  }, [collaboratingWorkspaces, privateWorkspaces, sharedWorkspaces, state]);
+
+  // upd local state when change state context provider
+  // TODO: set workspaces in Zustand
+  useEffect(() => {
+    const findSelectedWorkspace = state.workspaces.find(
+      workspace => workspace.id === defaultValue?.id
+    );
+    if (findSelectedWorkspace) setSelectedOption(findSelectedWorkspace);
+  }, [state, defaultValue]);
 
   ///* handlers
   const handleSelect = (option: workspace) => {
