@@ -222,6 +222,13 @@ export const getUsersFromSearch = async (email: string) => {
   return accounts;
 };
 
+export const findUser = async (userId: string) => {
+  const response = await db.query.users.findFirst({
+    where: (u, { eq }) => eq(u.id, userId),
+  });
+  return response;
+};
+
 /////* Folders
 export const getFolders = async (workspaceId: string) => {
   const isValid = validate(workspaceId);

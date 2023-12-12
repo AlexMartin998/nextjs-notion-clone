@@ -2,7 +2,7 @@
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 // quill styles - theme
 import 'quill/dist/quill.snow.css';
@@ -13,6 +13,7 @@ import { WPListType } from '@/lib/interfaces';
 import {
   deleteFile,
   deleteFolder,
+  findUser,
   updateFile,
   updateFolder,
 } from '@/lib/supabase/queries';
@@ -194,6 +195,57 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
 
     return `${workspaceBreadCrumb} ${folderBreadCrumb} ${fileBreadCrumb}`;
   }, [state, pathname, workspaceId]);
+
+  //////* Effects
+  //// collaborators real time
+  useEffect(() => {
+    if (!fileId || quill === null) return;
+
+    const room = supabase.channel(fileId);
+    room
+      .on('presence', { event: 'sync' }, () => {
+        const newState = room.presenceState();
+        const newCollaborators = Object.values(newState).flat() as any;
+        setCollaborators(newCollaborators);
+
+        if (user) {
+          const allCursors: any = [];
+          newCollaborators.forEach(
+            (collaborator: { id: string; email: string; avatar: string }) => {
+              if (collaborator.id !== user.id) {
+                const userCursor = quill.getModule('cursors');
+                userCursor.createCursor(
+                  collaborator.id,
+                  collaborator.email.split('@')[0],
+                  `#${Math.random().toString(16).slice(2, 8)}`
+                );
+                allCursors.push(userCursor);
+              }
+            }
+          );
+
+          setLocalCursors(allCursors);
+        }
+      })
+      .subscribe(async status => {
+        if (status !== 'SUBSCRIBED' || !user) return;
+        const response = await findUser(user.id);
+        if (!response) return;
+
+        room.track({
+          id: user.id,
+          email: user.email?.split('@')[0],
+          avatarUrl: response.avatarUrl
+            ? supabase.storage.from('avatars').getPublicUrl(response.avatarUrl)
+                .data.publicUrl
+            : '',
+        });
+      });
+
+    return () => {
+      supabase.removeChannel(room);
+    };
+  }, [fileId, quill, supabase, user]);
 
   //////* Handlers
   const restoreFileHandler = async () => {
