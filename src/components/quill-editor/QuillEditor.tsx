@@ -17,7 +17,14 @@ import {
   updateFolder,
 } from '@/lib/supabase/queries';
 import { File, Folder, workspace } from '@/lib/supabase/supabase.types';
-import { Button } from '../ui';
+import { Avatar, AvatarFallback, AvatarImage, Button } from '../ui';
+import { Badge } from '../ui/badge';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '../ui/tooltip';
 
 export type QuillEditorProps = {
   dirDetails: File | Folder | workspace;
@@ -142,6 +149,52 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     } as workspace | Folder | File;
   }, [dirType, dirDetails, state.workspaces, workspaceId, folderId, fileId]);
 
+  //////* BreadCrumbs
+  const breadCrumbs = useMemo(() => {
+    if (!pathname || !state.workspaces || !workspaceId) return;
+
+    ///* Workspace BreadCrumb
+    const segments = pathname
+      .split('/')
+      .filter(val => val !== 'dashboard' && val);
+
+    const workspaceDetails = state.workspaces.find(
+      workspace => workspace.id === workspaceId
+    );
+
+    const workspaceBreadCrumb = workspaceDetails
+      ? `${workspaceDetails.iconId} ${workspaceDetails.title}`
+      : '';
+
+    if (segments.length === 1) {
+      return workspaceBreadCrumb;
+    }
+
+    ///* Folder BreadCrumb
+    const folderSegment = segments[1];
+    const folderDetails = workspaceDetails?.folders.find(
+      folder => folder.id === folderSegment
+    );
+    const folderBreadCrumb = folderDetails
+      ? `/ ${folderDetails.iconId} ${folderDetails.title}`
+      : '';
+
+    if (segments.length === 2) {
+      return `${workspaceBreadCrumb} ${folderBreadCrumb}`;
+    }
+
+    ///* File BreadCrumb
+    const fileSegment = segments[2];
+    const fileDetails = folderDetails?.files.find(
+      file => file.id === fileSegment
+    );
+    const fileBreadCrumb = fileDetails
+      ? `/ ${fileDetails.iconId} ${fileDetails.title}`
+      : '';
+
+    return `${workspaceBreadCrumb} ${folderBreadCrumb} ${fileBreadCrumb}`;
+  }, [state, pathname, workspaceId]);
+
   //////* Handlers
   const restoreFileHandler = async () => {
     if (!workspaceId) return;
@@ -188,7 +241,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   return (
     <>
       <div className="relative">
-        {/* ========== Restor / Trash ========== */}
+        {/* ========== Restore / Trash ========== */}
         {details.inTrash && (
           <article className="py-2 z-40 bg-[#EB5757] flex md:flex-row flex-col justify-center items-center gap-4 flex-wrap">
             <div className="flex flex-col md:flex-row gap-2 justify-center items-center">
@@ -213,8 +266,59 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
                 Delete
               </Button>
             </div>
+
+            <span className="text-sm text-white">{details.inTrash}</span>
           </article>
         )}
+
+        {/* ========== BreadCrumbs & Status (saved/saving) ========== */}
+        <div className="flex flex-col-reverse sm:flex-row sm:justify-between justify-center sm:items-center sm:p-2 p-8">
+          {/* ------ BreadCrum ------ */}
+          <div>{breadCrumbs}</div>
+
+          {/* ------ Collaborators online ------ */}
+          <div className="flex items-center gap-4">
+            <div className="flex items-center justify-center h-10">
+              {collaborators?.map(collaborator => (
+                <TooltipProvider key={collaborator.id}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Avatar className="-ml-3 bg-background border-2 flex items-center justify-center border-white h-8 w-8 rounded-full">
+                        <AvatarImage
+                          src={
+                            collaborator.avatarUrl ? collaborator.avatarUrl : ''
+                          }
+                          className="rounded-full"
+                        />
+                        <AvatarFallback>
+                          {collaborator.email.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </TooltipTrigger>
+                    <TooltipContent>{collaborator.email}</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ))}
+            </div>
+
+            {/* ------ doc status ------ */}
+            {saving ? (
+              <Badge
+                variant="secondary"
+                className="bg-orange-600 top-4 text-white right-4 z-50"
+              >
+                Saving...
+              </Badge>
+            ) : (
+              <Badge
+                variant="secondary"
+                className="bg-emerald-600 top-4 text-white right-4 z-50"
+              >
+                Saved
+              </Badge>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="flex justify-center items-center flex-col mt-2 relative">
