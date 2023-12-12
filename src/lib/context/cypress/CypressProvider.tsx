@@ -108,6 +108,15 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
+  const deleteWorkspace = (workspaceId: string) => {
+    dispatch({
+      type: CypressActionType.deleteWorkspaces,
+      payload: workspaceId,
+    });
+
+    console.log(state.workspaces);
+  };
+
   const setFolders = ({
     workspaceId,
     workspaceFolders,
@@ -173,6 +182,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
 
         setMyWorkspaces,
         updateWorkspace,
+        deleteWorkspace,
         setFolders,
         addFolder,
         updateFolder,

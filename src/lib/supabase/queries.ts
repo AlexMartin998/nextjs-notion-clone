@@ -7,6 +7,7 @@ import { folders, users, workspaces } from '../../../migrations/schema';
 import db from './db';
 import { collaborators, files } from './schema';
 import { File, Folder, Subscription, User, workspace } from './supabase.types';
+import { revalidatePath } from 'next/cache';
 
 /////* workspace
 export const createWorkspace = async (workspace: workspace) => {
@@ -116,6 +117,7 @@ export const getSharedWorkspaces = async (userId: string) => {
 export const deleteWorkspace = async (workspaceId: string) => {
   if (!workspaceId) return;
   await db.delete(workspaces).where(eq(workspaces.id, workspaceId));
+  revalidatePath(`/dashboard/${workspaceId}`);
 };
 
 /////* Subscription

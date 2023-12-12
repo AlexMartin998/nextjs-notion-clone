@@ -17,6 +17,7 @@ export type CypressAction =
       type: CypressActionType.updateWorkspaces;
       payload: UpdateWorkspaceProps;
     }
+  | { type: CypressActionType.deleteWorkspaces; payload: string }
   | {
       type: CypressActionType.setFolders;
       payload: { workspaceId: string; folders: [] | AppFoldersType[] };
@@ -49,6 +50,7 @@ export type CypressAction =
 export enum CypressActionType {
   setWorkspaces = 'SET_WORKSPACES',
   updateWorkspaces = 'UPDATE_WORKSPACE',
+  deleteWorkspaces = 'DELETE_WORKSPACE',
 
   setFolders = 'SET_FOLDERS',
   addFolder = 'ADD_FOLDER',
@@ -80,6 +82,14 @@ export const cypressReducer = (
             };
           }
           return workspace;
+        }),
+      };
+
+    case CypressActionType.deleteWorkspaces:
+      return {
+        ...state,
+        workspaces: state.workspaces.filter(workspace => {
+          return workspace.id !== action.payload;
         }),
       };
 

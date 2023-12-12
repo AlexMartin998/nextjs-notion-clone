@@ -26,6 +26,7 @@ interface CypressContextProps {
     collaboratingWorkspaces,
   }: SetMyWorkspacesProps) => void;
   updateWorkspace: (props: UpdateWorkspaceProps) => void;
+  deleteWorkspace: (workspaceId: string) => void;
 
   setFolders: ({
     workspaceId,
