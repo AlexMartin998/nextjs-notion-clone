@@ -323,3 +323,8 @@ export const updateFile = async (file: Partial<File>, fileId: string) => {
     return { data: null, error: 'Error' };
   }
 };
+
+export const deleteFile = async (fileId: string) => {
+  if (!fileId) return;
+  await db.delete(files).where(eq(files.id, fileId));
+};
