@@ -10,6 +10,12 @@ import 'quill/dist/quill.snow.css';
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
 import { WPListType } from '@/lib/interfaces';
+import {
+  deleteFile,
+  deleteFolder,
+  updateFile,
+  updateFolder,
+} from '@/lib/supabase/queries';
 import { File, Folder, workspace } from '@/lib/supabase/supabase.types';
 import { Button } from '../ui';
 
@@ -46,7 +52,15 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   dirDetails,
 }) => {
   const supabase = createClientComponentClient();
-  const { state, workspaceId, folderId } = useCypress();
+  const {
+    state,
+    workspaceId,
+    folderId,
+    updateFile: updateFileContext,
+    updateFolder: updateFolderContext,
+    deleteFile: deleteFileContext,
+    deleteFolder: deleteFolderContext,
+  } = useCypress();
   const { user } = useAuthUser();
   const router = useRouter();
   const pathname = usePathname();
@@ -129,13 +143,52 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   }, [dirType, dirDetails, state.workspaces, workspaceId, folderId, fileId]);
 
   //////* Handlers
-  const restoreFileHandler = async () => {};
+  const restoreFileHandler = async () => {
+    if (!workspaceId) return;
 
-  const deleteFileHandler = async () => {};
+    if (dirType === WPListType.file) {
+      if (!folderId) return;
+      updateFileContext({
+        file: { inTrash: '' },
+        fileId,
+        folderId,
+        workspaceId,
+      });
+      await updateFile({ inTrash: '' }, fileId);
+    }
+
+    if (dirType === WPListType.folder) {
+      updateFolderContext({
+        folder: { inTrash: '' },
+        folderId: fileId,
+        workspaceId,
+      });
+      await updateFolder({ inTrash: '' }, fileId);
+    }
+  };
+
+  const deleteFileHandler = async () => {
+    if (!workspaceId) return;
+
+    if (dirType === WPListType.file) {
+      if (!folderId) return;
+
+      deleteFileContext({ fileId, folderId, workspaceId });
+      await deleteFile(fileId);
+      router.replace(`/dashboard/${workspaceId}`);
+    }
+
+    if (dirType === WPListType.folder) {
+      deleteFolderContext({ folderId: fileId, workspaceId });
+      await deleteFolder(fileId);
+      router.replace(`/dashboard/${workspaceId}`);
+    }
+  };
 
   return (
     <>
       <div className="relative">
+        {/* ========== Restor / Trash ========== */}
         {details.inTrash && (
           <article className="py-2 z-40 bg-[#EB5757] flex md:flex-row flex-col justify-center items-center gap-4 flex-wrap">
             <div className="flex flex-col md:flex-row gap-2 justify-center items-center">
