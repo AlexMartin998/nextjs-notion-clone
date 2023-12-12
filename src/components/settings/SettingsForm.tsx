@@ -15,6 +15,7 @@ import {
 import { useUiStore } from '@/lib/store/ui/ui';
 import {
   addCollaborators,
+  deleteWorkspace,
   getCollaborators,
   removeCollaborators,
   updateWorkspace,
@@ -51,6 +52,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
     state,
     workspaceId,
     updateWorkspace: updateWorkspaceContext,
+    deleteWorkspace: deleteWorkspaceContext,
   } = useCypress();
   const setOpen = useUiStore(s => s.setSubscriptionModalOpen);
   const { user, subscription } = useAuthUser();
@@ -93,33 +95,6 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
     };
     fetchCollaborators();
   }, [workspaceId]);
-
-  //////* Collaborators handler
-  /// get all collaborators
-
-  /// add collaborators
-  const addCollaborator = async (profile: User) => {
-    if (!workspaceId) return;
-    if (subscription?.status !== 'active' && collaborators.length >= 2)
-      return setOpen(true); // 2 collabs as limit for free plans
-
-    await addCollaborators([profile], workspaceId);
-    setCollaborators([...collaborators, profile]);
-  };
-
-  /// remove collaborators
-  const removeCollaborator = async (user: User) => {
-    if (!workspaceId) return;
-    if (collaborators.length === 1) {
-      setPermissions(WorkspacesPermissions.private);
-    }
-    await removeCollaborators([user], workspaceId);
-
-    setCollaborators(
-      collaborators.filter(collaborator => collaborator.id !== user.id)
-    );
-    router.refresh();
-  };
 
   /////* Workspace handler
   /// onChange workspace title
@@ -173,10 +148,38 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
   /// on delete workspace
   const onDeleteWorkspace = async () => {
     if (!workspaceId) return;
-    // await deleteWorkspace(workspaceId);
-    toast({ title: 'Successfully deleted your workspae' });
-    // dispatch({ type: 'DELETE_WORKSPACE', payload: workspaceId });
+
+    await deleteWorkspace(workspaceId);
+    deleteWorkspaceContext(workspaceId);
     router.replace('/dashboard'); // can't go back
+    toast({ title: 'Successfully deleted your workspae' });
+  };
+
+  //////* Collaborators handler
+  /// get all collaborators
+
+  /// add collaborators
+  const addCollaborator = async (profile: User) => {
+    if (!workspaceId) return;
+    if (subscription?.status !== 'active' && collaborators.length >= 2)
+      return setOpen(true); // 2 collabs as limit for free plans
+
+    await addCollaborators([profile], workspaceId);
+    setCollaborators([...collaborators, profile]);
+  };
+
+  /// remove collaborators
+  const removeCollaborator = async (user: User) => {
+    if (!workspaceId) return;
+    if (collaborators.length === 1) {
+      setPermissions(WorkspacesPermissions.private);
+    }
+    await removeCollaborators([user], workspaceId);
+
+    setCollaborators(
+      collaborators.filter(collaborator => collaborator.id !== user.id)
+    );
+    router.refresh();
   };
 
   /////* payments

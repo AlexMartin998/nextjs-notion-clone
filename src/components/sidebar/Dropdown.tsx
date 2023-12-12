@@ -4,7 +4,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import clsx from 'clsx';
 import { PlusIcon, Trash } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
