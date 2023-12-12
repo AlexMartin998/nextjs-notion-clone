@@ -71,6 +71,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     updateFolder: updateFolderContext,
     deleteFile: deleteFileContext,
     deleteFolder: deleteFolderContext,
+    updateWorkspace: updateWorkspaceContext,
   } = useCypress();
   const { user } = useAuthUser();
   const router = useRouter();
@@ -298,34 +299,33 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     if (!fileId) return;
 
     if (dirType === WPDirType.workspace) {
-      // dispatch({
-      //   type: 'UPDATE_WORKSPACE',
-      //   payload: { workspace: { iconId: icon }, workspaceId: fileId },
-      // });
+      updateWorkspaceContext({
+        workspace: { iconId: icon },
+        workspaceId: fileId,
+      });
       await updateWorkspace({ iconId: icon }, fileId);
     }
 
     if (dirType === WPDirType.folder) {
       if (!workspaceId) return;
 
-      // dispatch({
-      //   type: 'UPDATE_FOLDER',
-      //   payload: {
-      //     folder: { iconId: icon },
-      //     workspaceId,
-      //     folderId: fileId,
-      //   },
-      // });
+      updateFolderContext({
+        folder: { iconId: icon },
+        workspaceId,
+        folderId: fileId,
+      });
       await updateFolder({ iconId: icon }, fileId);
     }
 
     if (dirType === WPDirType.file) {
       if (!workspaceId || !folderId) return;
 
-      // dispatch({
-      //   type: 'UPDATE_FILE',
-      //   payload: { file: { iconId: icon }, workspaceId, folderId, fileId },
-      // });
+      updateFileContext({
+        file: { iconId: icon },
+        workspaceId,
+        folderId,
+        fileId,
+      });
       await updateFile({ iconId: icon }, fileId);
     }
   };
@@ -433,7 +433,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
       {/* ========== Quill Editor ========== */}
       <div className="flex justify-center items-center flex-col mt-2 relative">
         <div className="w-full self-center max-w-[800px] flex flex-col px-7 lg:my-8">
-          {/* ------ Emoji Picker ------  */}
+          {/* ------ Emoji Picker ------ */}
           <div className="text-[80px]">
             <EmojiPicker getValue={iconOnChange}>
               <div className="w-[100px] cursor-pointer transition-colors h-[100px] flex items-center justify-center hover:bg-muted rounded-xl">
@@ -442,9 +442,9 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
             </EmojiPicker>
           </div>
 
-          {/* ------ Banner Uploader ------  */}
+          {/* ------ Banner Uploader ------ */}
 
-          {/* ------ s ------  */}
+          {/* ------ s ------ */}
         </div>
 
         {/* ======= Quill Editor ======= */}
