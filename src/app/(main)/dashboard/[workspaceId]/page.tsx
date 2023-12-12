@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'; // works with quill
 
 import QuillEditor from '@/components/quill-editor/QuillEditor';
 import { getWorkspaceDetails } from '@/lib/supabase/queries';
