@@ -61,13 +61,13 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   // real tiem cursors like Google Docs
   const [localCursors, setLocalCursors] = useState<any>([]);
 
-  /// realtime with sockets
+  ///* realtime with sockets
   // const { socket, isConnected } = useSocket();
 
-  /// debouncer
+  ///* debouncer
   const saveTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
-  //////* s
+  //////* Display Quill Editor
   const wrapperRef = useCallback(async (wrapper: any) => {
     // quill need window object
     if (typeof window !== 'undefined') {
@@ -97,7 +97,9 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
 
   return (
     <>
-      <div id="container" className="max-w-[800px]" ref={wrapperRef}></div>
+      <div className="flex justify-center items-center flex-col mt-2 relative">
+        <div id="container" className="max-w-[800px]" ref={wrapperRef}></div>
+      </div>
     </>
   );
 };
