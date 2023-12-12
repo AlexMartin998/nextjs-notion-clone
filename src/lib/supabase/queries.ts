@@ -304,6 +304,27 @@ export const getFiles = async (folderId: string) => {
   }
 };
 
+export const getFileDetails = async (fileId: string) => {
+  const isValid = validate(fileId);
+  if (!isValid)
+    return {
+      data: [],
+      error: 'Error',
+    };
+
+  try {
+    const response = (await db
+      .select()
+      .from(files)
+      .where(eq(files.id, fileId))
+      .limit(1)) as File[];
+    return { data: response, error: null };
+  } catch (error) {
+    console.log('🔴Error', error);
+    return { data: [], error: 'Error' };
+  }
+};
+
 export const createFile = async (file: File) => {
   try {
     await db.insert(files).values(file);
