@@ -36,3 +36,9 @@ export type UpdateFileProps = {
   workspaceId: string;
   fileId: string;
 };
+
+export type DeleteFileProps = {
+  workspaceId: string;
+  folderId: string;
+  fileId: string;
+};

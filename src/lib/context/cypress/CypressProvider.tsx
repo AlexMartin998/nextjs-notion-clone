@@ -11,6 +11,7 @@ import { CypressActionType, cypressReducer } from './cypressReducer';
 import {
   AddFileProps,
   AddFolderProps,
+  DeleteFileProps,
   SetMyWorkspacesProps,
   UpdateFileProps,
   UpdateFolderProps,
@@ -113,8 +114,6 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
       type: CypressActionType.deleteWorkspaces,
       payload: workspaceId,
     });
-
-    console.log(state.workspaces);
   };
 
   const setFolders = ({
@@ -173,6 +172,13 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
+  const deleteFile = (props: DeleteFileProps) => {
+    dispatch({
+      type: CypressActionType.deleteFile,
+      payload: props,
+    });
+  };
+
   return (
     <CypressContext.Provider
       value={{
@@ -188,6 +194,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
         updateFolder,
         addFile,
         updateFile,
+        deleteFile,
       }}
     >
       {children}

@@ -6,7 +6,12 @@ import {
   AppWorkspacesType,
   CypressState,
 } from './CypressProvider';
-import { AddFileProps, UpdateFileProps, UpdateWorkspaceProps } from './types';
+import {
+  AddFileProps,
+  DeleteFileProps,
+  UpdateFileProps,
+  UpdateWorkspaceProps,
+} from './types';
 
 export type CypressAction =
   | {
@@ -45,6 +50,10 @@ export type CypressAction =
   | {
       type: CypressActionType.setFiles;
       payload: { workspaceId: string; files: File[]; folderId: string };
+    }
+  | {
+      type: CypressActionType.deleteFile;
+      payload: DeleteFileProps;
     };
 
 export enum CypressActionType {
@@ -59,6 +68,7 @@ export enum CypressActionType {
   setFiles = 'SET_FILES',
   addFile = 'ADD_FILE',
   updateFile = 'UPDATE_FILE',
+  deleteFile = 'DELETE_FILE',
 }
 
 export const cypressReducer = (
@@ -220,6 +230,31 @@ export const cypressReducer = (
                       }
                       return file;
                     }),
+                  };
+                }
+                return folder;
+              }),
+            };
+          }
+          return workspace;
+        }),
+      };
+
+    case CypressActionType.deleteFile:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folder: workspace.folders.map(folder => {
+                if (folder.id === action.payload.folderId) {
+                  return {
+                    ...folder,
+                    files: folder.files.filter(
+                      file => file.id !== action.payload.fileId
+                    ),
                   };
                 }
                 return folder;

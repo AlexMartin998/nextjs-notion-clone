@@ -7,6 +7,7 @@ import { CypressState } from './CypressProvider';
 import {
   AddFileProps,
   AddFolderProps,
+  DeleteFileProps,
   SetMyWorkspacesProps,
   UpdateFileProps,
   UpdateFolderProps,
@@ -42,6 +43,7 @@ interface CypressContextProps {
     folderId,
     workspaceId,
   }: UpdateFileProps) => void;
+  deleteFile: (props: DeleteFileProps) => void;
 }
 
 export const CypressContext = createContext({} as CypressContextProps);
