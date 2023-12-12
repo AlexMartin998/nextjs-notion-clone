@@ -6,4 +6,5 @@ export enum WorkspacesPermissions {
 export enum WPListType {
   folder = 'folder',
   file = 'file',
+  workspace = 'workspace',
 }

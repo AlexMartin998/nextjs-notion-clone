@@ -2,14 +2,16 @@
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 
 // quill styles - theme
 import 'quill/dist/quill.snow.css';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
-import { Folder, workspace } from '@/lib/supabase/supabase.types';
+import { WPListType } from '@/lib/interfaces';
+import { File, Folder, workspace } from '@/lib/supabase/supabase.types';
+import { Button } from '../ui';
 
 export type QuillEditorProps = {
   dirDetails: File | Folder | workspace;
@@ -95,8 +97,73 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     }
   }, []);
 
+  //////* Fix caching probles (server & client)
+  const details = useMemo(() => {
+    // keep tracking to dir in contextprovider, if it does not exist, use server dir
+    let selectedDir;
+    if (dirType === WPListType.file) {
+      selectedDir = state.workspaces
+        .find(workspace => workspace.id === workspaceId)
+        ?.folders.find(folder => folder.id === folderId)
+        ?.files.find(file => file.id === fileId);
+    }
+    if (dirType === WPListType.folder) {
+      selectedDir = state.workspaces
+        .find(workspace => workspace.id === workspaceId)
+        ?.folders.find(folder => folder.id === fileId);
+    }
+    if (dirType === WPListType.workspace) {
+      selectedDir = state.workspaces.find(workspace => workspace.id === fileId);
+    }
+
+    if (selectedDir) return selectedDir;
+
+    return {
+      title: dirDetails.title,
+      iconId: dirDetails.iconId,
+      createdAt: dirDetails.createdAt,
+      data: dirDetails.data,
+      inTrash: dirDetails.inTrash,
+      bannerUrl: dirDetails.bannerUrl,
+    } as workspace | Folder | File;
+  }, [dirType, dirDetails, state.workspaces, workspaceId, folderId, fileId]);
+
+  //////* Handlers
+  const restoreFileHandler = async () => {};
+
+  const deleteFileHandler = async () => {};
+
   return (
     <>
+      <div className="relative">
+        {details.inTrash && (
+          <article className="py-2 z-40 bg-[#EB5757] flex md:flex-row flex-col justify-center items-center gap-4 flex-wrap">
+            <div className="flex flex-col md:flex-row gap-2 justify-center items-center">
+              <span className="text-white">
+                This {dirType} is in the trash.
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-transparent border-white text-white hover:bg-white hover:text-[#EB5757]"
+                onClick={restoreFileHandler}
+              >
+                Restore
+              </Button>
+
+              <Button
+                size="sm"
+                variant="outline"
+                className="bg-transparent border-white text-white hover:bg-white hover:text-[#EB5757]"
+                onClick={deleteFileHandler}
+              >
+                Delete
+              </Button>
+            </div>
+          </article>
+        )}
+      </div>
+
       <div className="flex justify-center items-center flex-col mt-2 relative">
         <div id="container" className="max-w-[800px]" ref={wrapperRef}></div>
       </div>
