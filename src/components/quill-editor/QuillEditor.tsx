@@ -9,7 +9,7 @@ import 'quill/dist/quill.snow.css';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
-import { WPListType } from '@/lib/interfaces';
+import { SupabaseStorage, WPListType } from '@/lib/interfaces';
 import {
   deleteFile,
   deleteFolder,
@@ -18,6 +18,7 @@ import {
   updateFolder,
 } from '@/lib/supabase/queries';
 import { File, Folder, workspace } from '@/lib/supabase/supabase.types';
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage, Button } from '../ui';
 import { Badge } from '../ui/badge';
 import {
@@ -236,8 +237,9 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
           id: user.id,
           email: user.email?.split('@')[0],
           avatarUrl: response.avatarUrl
-            ? supabase.storage.from('avatars').getPublicUrl(response.avatarUrl)
-                .data.publicUrl
+            ? supabase.storage
+                .from(SupabaseStorage.avatarsBucket)
+                .getPublicUrl(response.avatarUrl).data.publicUrl
             : '',
         });
       });
@@ -372,6 +374,23 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
           </div>
         </div>
       </div>
+
+      {/* ========== Banner ========== */}
+      {details.bannerUrl && (
+        <div className="relative w-full h-[200px]">
+          <Image
+            src={
+              supabase.storage
+                .from(SupabaseStorage.bannersBucket)
+                .getPublicUrl(details.bannerUrl).data.publicUrl
+            }
+            className="w-full md:h-48 h-20 object-cover unselectable"
+            alt="Banner Image"
+            fill
+            draggable="false"
+          />
+        </div>
+      )}
 
       <div className="flex justify-center items-center flex-col mt-2 relative">
         <div id="container" className="max-w-[800px]" ref={wrapperRef}></div>
