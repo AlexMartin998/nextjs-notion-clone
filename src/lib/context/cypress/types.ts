@@ -24,6 +24,8 @@ export type UpdateFolderProps = {
   workspaceId: string;
 };
 
+export type DeleteFolderProps = { workspaceId: string; folderId: string };
+
 export type AddFileProps = {
   workspaceId: string;
   file: File;

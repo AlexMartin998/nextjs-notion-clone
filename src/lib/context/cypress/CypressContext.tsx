@@ -8,6 +8,7 @@ import {
   AddFileProps,
   AddFolderProps,
   DeleteFileProps,
+  DeleteFolderProps,
   SetMyWorkspacesProps,
   UpdateFileProps,
   UpdateFolderProps,
@@ -35,6 +36,7 @@ interface CypressContextProps {
   }: FoldersDropdownListProps) => void;
   addFolder: ({ workspaceId, newFolder }: AddFolderProps) => void;
   updateFolder: ({ folder, folderId, workspaceId }: UpdateFolderProps) => void;
+  deleteFolder: (props: DeleteFolderProps) => void;
 
   addFile: (props: AddFileProps) => void;
   updateFile: ({

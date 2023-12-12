@@ -12,6 +12,7 @@ import {
   AddFileProps,
   AddFolderProps,
   DeleteFileProps,
+  DeleteFolderProps,
   SetMyWorkspacesProps,
   UpdateFileProps,
   UpdateFolderProps,
@@ -158,6 +159,13 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
     });
   };
 
+  const deleteFolder = (props: DeleteFolderProps) => {
+    dispatch({
+      type: CypressActionType.deleteFolder,
+      payload: props,
+    });
+  };
+
   const updateFile = (payload: UpdateFileProps) => {
     dispatch({
       type: CypressActionType.updateFile,
@@ -191,6 +199,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
         deleteWorkspace,
         setFolders,
         addFolder,
+        deleteFolder,
         updateFolder,
         addFile,
         updateFile,

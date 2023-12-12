@@ -9,6 +9,7 @@ import {
 import {
   AddFileProps,
   DeleteFileProps,
+  DeleteFolderProps,
   UpdateFileProps,
   UpdateWorkspaceProps,
 } from './types';
@@ -40,6 +41,10 @@ export type CypressAction =
       };
     }
   | {
+      type: CypressActionType.deleteFolder;
+      payload: DeleteFolderProps;
+    }
+  | {
       type: CypressActionType.updateFile;
       payload: UpdateFileProps;
     }
@@ -64,6 +69,7 @@ export enum CypressActionType {
   setFolders = 'SET_FOLDERS',
   addFolder = 'ADD_FOLDER',
   updateFolder = 'UPDATE_FOLDER',
+  deleteFolder = 'DELETE_FOLDER',
 
   setFiles = 'SET_FILES',
   addFile = 'ADD_FILE',
@@ -152,6 +158,23 @@ export const cypressReducer = (
                 }
                 return folder;
               }),
+            };
+          }
+          return workspace;
+        }),
+      };
+
+    case CypressActionType.deleteFolder:
+      return {
+        ...state,
+
+        workspaces: state.workspaces.map(workspace => {
+          if (workspace.id === action.payload.workspaceId) {
+            return {
+              ...workspace,
+              folders: workspace.folders.filter(
+                folder => folder.id !== action.payload.folderId
+              ),
             };
           }
           return workspace;
