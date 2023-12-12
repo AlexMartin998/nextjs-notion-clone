@@ -9,7 +9,7 @@ import 'quill/dist/quill.snow.css';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
-import { SupabaseStorage, WPDirType, WPListType } from '@/lib/interfaces';
+import { SupabaseStorage, WPDirType } from '@/lib/interfaces';
 import {
   deleteFile,
   deleteFolder,
@@ -19,7 +19,9 @@ import {
   updateWorkspace,
 } from '@/lib/supabase/queries';
 import { File, Folder, workspace } from '@/lib/supabase/supabase.types';
+import { XCircleIcon } from 'lucide-react';
 import Image from 'next/image';
+import BannerUpload from '../banner-upload/BannerUpload';
 import { EmojiPicker } from '../shared';
 import { Avatar, AvatarFallback, AvatarImage, Button } from '../ui';
 import { Badge } from '../ui/badge';
@@ -33,7 +35,7 @@ import {
 export type QuillEditorProps = {
   dirDetails: File | Folder | workspace;
   fileId: string; // id of fetched data
-  dirType: 'workspace' | 'folder' | 'file';
+  dirType: WPDirType;
 };
 
 /////* Toolbar Opts - custom module in QuillEditor
@@ -127,18 +129,18 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   const details = useMemo(() => {
     // keep tracking to dir in contextprovider, if it does not exist, use server dir
     let selectedDir;
-    if (dirType === WPListType.file) {
+    if (dirType === WPDirType.file) {
       selectedDir = state.workspaces
         .find(workspace => workspace.id === workspaceId)
         ?.folders.find(folder => folder.id === folderId)
         ?.files.find(file => file.id === fileId);
     }
-    if (dirType === WPListType.folder) {
+    if (dirType === WPDirType.folder) {
       selectedDir = state.workspaces
         .find(workspace => workspace.id === workspaceId)
         ?.folders.find(folder => folder.id === fileId);
     }
-    if (dirType === WPListType.workspace) {
+    if (dirType === WPDirType.workspace) {
       selectedDir = state.workspaces.find(workspace => workspace.id === fileId);
     }
 
@@ -256,7 +258,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   const restoreFileHandler = async () => {
     if (!workspaceId) return;
 
-    if (dirType === WPListType.file) {
+    if (dirType === WPDirType.file) {
       if (!folderId) return;
       updateFileContext({
         file: { inTrash: '' },
@@ -267,7 +269,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
       await updateFile({ inTrash: '' }, fileId);
     }
 
-    if (dirType === WPListType.folder) {
+    if (dirType === WPDirType.folder) {
       updateFolderContext({
         folder: { inTrash: '' },
         folderId: fileId,
@@ -280,7 +282,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
   const deleteFileHandler = async () => {
     if (!workspaceId) return;
 
-    if (dirType === WPListType.file) {
+    if (dirType === WPDirType.file) {
       if (!folderId) return;
 
       deleteFileContext({ fileId, folderId, workspaceId });
@@ -288,7 +290,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
       router.replace(`/dashboard/${workspaceId}`);
     }
 
-    if (dirType === WPListType.folder) {
+    if (dirType === WPDirType.folder) {
       deleteFolderContext({ folderId: fileId, workspaceId });
       await deleteFolder(fileId);
       router.replace(`/dashboard/${workspaceId}`);
@@ -328,6 +330,49 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
       });
       await updateFile({ iconId: icon }, fileId);
     }
+  };
+
+  const deleteBanner = async () => {
+    if (!fileId) return;
+    setDeletingBanner(true);
+
+    if (dirType === WPDirType.file) {
+      if (!folderId || !workspaceId) return;
+      updateFileContext({
+        file: { bannerUrl: '' },
+        fileId,
+        folderId,
+        workspaceId,
+      });
+      await supabase.storage
+        .from(SupabaseStorage.bannersBucket)
+        .remove([`banner-${fileId}`]);
+      await updateFile({ bannerUrl: '' }, fileId);
+    }
+
+    if (dirType === WPDirType.folder) {
+      if (!workspaceId) return;
+      updateFolderContext({
+        folder: { bannerUrl: '' },
+        folderId: fileId,
+        workspaceId,
+      });
+      await supabase.storage
+        .from(SupabaseStorage.bannersBucket)
+        .remove([`banner-${fileId}`]);
+      await updateFolder({ bannerUrl: '' }, fileId);
+    }
+
+    if (dirType === WPDirType.workspace) {
+      updateWorkspaceContext({
+        workspace: { bannerUrl: '' },
+        workspaceId: fileId,
+      });
+      await supabase.storage.from('file-banners').remove([`banner-${fileId}`]);
+      await updateWorkspace({ bannerUrl: '' }, fileId);
+    }
+
+    setDeletingBanner(false);
   };
 
   return (
@@ -443,6 +488,29 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
           </div>
 
           {/* ------ Banner Uploader ------ */}
+          <div className="flex">
+            <BannerUpload
+              id={fileId}
+              dirType={dirType}
+              className="mt-2 text-sm text-muted-foreground p-2 hover:text-card-foreground transition-all rounded-md"
+            >
+              {details.bannerUrl ? 'Update Banner' : 'Add Banner'}
+            </BannerUpload>
+
+            {details.bannerUrl && (
+              <Button
+                disabled={deletingBanner}
+                onClick={deleteBanner}
+                variant="ghost"
+                className="gap-2 hover:bg-background flex item-center justify-center mt-2 text-sm text-muted-foreground w-36 p-2 rounded-md"
+              >
+                <XCircleIcon size={16} />
+                <span className="whitespace-nowrap font-normal">
+                  Remove Banner
+                </span>
+              </Button>
+            )}
+          </div>
 
           {/* ------ s ------ */}
         </div>
