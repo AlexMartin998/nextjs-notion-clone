@@ -17,6 +17,12 @@ export const formatPrice = (price: Price) => {
   return priceString;
 };
 
+export const toDateTime = (secs: number) => {
+  var t = new Date('1970-01-01T00:30:00Z');
+  t.setSeconds(secs);
+  return t;
+};
+
 export const postData = async ({
   url,
   data,
