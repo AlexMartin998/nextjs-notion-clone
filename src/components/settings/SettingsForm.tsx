@@ -1,7 +1,15 @@
 'use client';
 
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { Briefcase, Lock, Plus, Share, UserIcon } from 'lucide-react';
+import {
+  Briefcase,
+  CreditCard,
+  ExternalLink,
+  Lock,
+  Plus,
+  Share,
+  UserIcon,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,6 +29,8 @@ import {
   updateWorkspace,
 } from '@/lib/supabase/queries';
 import { User, workspace } from '@/lib/supabase/supabase.types';
+import { postData } from '@/lib/utils';
+import Link from 'next/link';
 import { CypressProfileIcon } from '../icons';
 import { CollaboratorSearch } from '../shared';
 import {
@@ -203,6 +213,22 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
     }
     setPermissions(WorkspacesPermissions.private);
     setOpenAlertMessage(false);
+  };
+
+  /// get subscription
+  const redirectToCustomerPortal = async () => {
+    console.log(`first`)
+    setLoadingPortal(true);
+    try {
+      const { url, error } = await postData({
+        url: '/api/create-portal-link',
+      });
+      window.location.assign(url);
+    } catch (error) {
+      console.log(error);
+      setLoadingPortal(false);
+    }
+    setLoadingPortal(false);
   };
 
   /////* payments
@@ -415,6 +441,50 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
             />
           </div>
         </div>
+
+        {/* ====== Billing & Plan ====== */}
+        <p className="flex items-center gap-2 mt-6">
+          <CreditCard size={20} /> Billing & Plan
+        </p>
+        <Separator />
+
+        <p className="text-muted-foreground">
+          You are currently on a {isSubscriptionActive ? 'Pro' : 'Free'} Plan
+        </p>
+        <Link
+          href="/"
+          target="_blank"
+          className="text-muted-foreground flex flex-row items-center gap-2"
+        >
+          View Plans <ExternalLink size={16} />
+        </Link>
+
+        {isSubscriptionActive ? (
+          <div>
+            <Button
+              type="button"
+              size="sm"
+              variant={'secondary'}
+              disabled={loadingPortal}
+              className="text-sm"
+              onClick={redirectToCustomerPortal}
+            >
+              Manage Subscription
+            </Button>
+          </div>
+        ) : (
+          <div>
+            <Button
+              type="button"
+              size="sm"
+              variant={'secondary'}
+              className="text-sm"
+              onClick={() => setOpen(true)}
+            >
+              Start Plan
+            </Button>
+          </div>
+        )}
 
         {/* ====== Alert Dialog to confirm the change to private (lose collabs) ====== */}
         <AlertDialog open={openAlertMessage}>
