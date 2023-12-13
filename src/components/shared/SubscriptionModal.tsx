@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 
 import { useSubscriptionModal } from '@/lib/context/ui/subscription-modal-provider';
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
+import { getStripe } from '@/lib/stripe/stripeClient';
 import { Price, ProductWithPrice } from '@/lib/supabase/supabase.types';
 import { formatPrice, postData } from '@/lib/utils';
 import { Button } from '../ui';
@@ -42,15 +43,15 @@ const SubscriptionModal: React.FC<SubscriptionModalProps> = ({ products }) => {
         return;
       }
 
+      /////* redirect to stripe checkout page
       const { sessionId } = await postData({
         url: '/api/create-checkout-session',
         data: { price },
       });
 
       console.log('Getting Checkout for stripe');
-      // TODO:
-      // const stripe = await getStripe();
-      // stripe?.redirectToCheckout({ sessionId });
+      const stripe = await getStripe();
+      stripe?.redirectToCheckout({ sessionId });
     } catch (error) {
       toast({ title: 'Oppse! Something went wrong.', variant: 'destructive' });
     } finally {

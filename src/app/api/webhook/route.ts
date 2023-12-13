@@ -1,15 +1,13 @@
 import { stripe } from '@/lib/stripe';
-import { headers } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
-
 import {
   manageSubscriptionStatusChange,
   upsertPriceRecord,
   upsertProductRecord,
 } from '@/lib/stripe/adminTasks';
+import { headers } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 
-// Stripe events webhooks
 const relevantEvents = new Set([
   'product.created',
   'product.updated',
@@ -36,7 +34,6 @@ export async function POST(request: NextRequest) {
     console.log(`Error message: ${err.message}`);
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
-
   if (relevantEvents.has(event.type)) {
     try {
       switch (event.type) {
@@ -44,11 +41,9 @@ export async function POST(request: NextRequest) {
         case 'product.updated':
           await upsertProductRecord(event.data.object as Stripe.Product);
           break;
-
         case 'price.created':
         case 'price.updated':
           await upsertPriceRecord(event.data.object as Stripe.Price);
-
         case 'customer.subscription.created':
         case 'customer.subscription.updated':
         case 'customer.subscription.deleted':
@@ -60,7 +55,6 @@ export async function POST(request: NextRequest) {
           );
           console.log('FROM WEBHOOK🚀', subscription.status);
           break;
-
         case 'checkout.session.completed':
           const checkoutSession = event.data.object as Stripe.Checkout.Session;
           if (checkoutSession.mode === 'subscription') {
@@ -72,7 +66,6 @@ export async function POST(request: NextRequest) {
             );
           }
           break;
-
         default:
           throw new Error('Unhandled relevant event!');
       }
