@@ -9,6 +9,7 @@ import {
   CypressTrashIcon,
 } from '../icons';
 import Settings from '../settings/Settings';
+import Trash from '../trash/Trash';
 
 export type NativeNavigationProps = {
   myWorkspaceId: string;
@@ -39,10 +40,12 @@ const NativeNavigation: React.FC<NativeNavigationProps> = ({
           </li>
         </Settings>
 
-        <li className="group/native flex text-Neutrals/neutrals-7 transition-all gap-2 cursor-pointer">
-          <CypressTrashIcon />
-          <span>Trash</span>
-        </li>
+        <Trash>
+          <li className="group/native flex text-Neutrals/neutrals-7 transition-all gap-2 cursor-pointer">
+            <CypressTrashIcon />
+            <span>Trash</span>
+          </li>
+        </Trash>
       </ul>
     </nav>
   );
