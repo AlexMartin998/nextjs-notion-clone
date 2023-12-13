@@ -20,7 +20,6 @@ const WorkspaceLayout: React.FC<WorkspaceLayoutProps> = ({
 
       <div className="dark:boder-Neutrals-12/70 border-l-[1px] w-full relative overflow-scroll">
         {children}
-        MobileSidebar
       </div>
     </div>
   );

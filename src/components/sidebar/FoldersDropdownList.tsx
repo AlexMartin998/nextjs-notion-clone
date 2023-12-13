@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
+import useSupabaseRealtime from '@/lib/hooks/useSupabaseRealtime';
 import { WPListType } from '@/lib/interfaces';
 import { useUiStore } from '@/lib/store/ui/ui';
 import { createFolder } from '@/lib/supabase/queries';
@@ -24,6 +25,7 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
   workspaceFolders,
   workspaceId,
 }) => {
+  useSupabaseRealtime();
   const setOpen = useUiStore(s => s.setSubscriptionModalOpen);
 
   const {
