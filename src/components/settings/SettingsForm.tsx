@@ -6,6 +6,7 @@ import {
   CreditCard,
   ExternalLink,
   Lock,
+  LogOut,
   Plus,
   Share,
   UserIcon,
@@ -33,6 +34,7 @@ import { postData } from '@/lib/utils';
 import Link from 'next/link';
 import { CypressProfileIcon } from '../icons';
 import { CollaboratorSearch } from '../shared';
+import LogoutButton from '../shared/LogoutButton';
 import {
   Avatar,
   AvatarFallback,
@@ -217,7 +219,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
 
   /// get subscription
   const redirectToCustomerPortal = async () => {
-    console.log(`first`)
+    console.log(`first`);
     setLoadingPortal(true);
     try {
       const { url, error } = await postData({
@@ -441,6 +443,13 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
             />
           </div>
         </div>
+
+        {/* ====== Profile ====== */}
+        <LogoutButton>
+          <div className="flex items-center">
+            <LogOut />
+          </div>
+        </LogoutButton>
 
         {/* ====== Billing & Plan ====== */}
         <p className="flex items-center gap-2 mt-6">
