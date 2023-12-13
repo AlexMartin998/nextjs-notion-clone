@@ -361,3 +361,22 @@ export const deleteFolder = async (folderId: string) => {
   if (!folderId) return;
   await db.delete(files).where(eq(files.id, folderId));
 };
+
+export const getActiveProductsWithPrice = async () => {
+  try {
+    const res = await db.query.products.findMany({
+      where: (pro, { eq }) => eq(pro.active, true),
+
+      with: {
+        prices: {
+          where: (pri, { eq }) => eq(pri.active, true),
+        },
+      },
+    });
+    if (res.length) return { data: res, error: null };
+    return { data: [], error: null };
+  } catch (error) {
+    console.log(error);
+    return { data: [], error };
+  }
+};

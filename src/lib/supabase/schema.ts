@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
   integer,
@@ -8,7 +8,13 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { prices, subscriptionStatus, users } from '../../../migrations/schema';
+
+import {
+  prices,
+  products,
+  subscriptionStatus,
+  users,
+} from '../../../migrations/schema';
 
 ////* Drizzle schemas ara very similar to SQL syntaxs
 
@@ -83,9 +89,7 @@ export const subscriptions = pgTable('subscriptions', {
   userId: uuid('user_id').notNull(),
   status: subscriptionStatus('status'),
   metadata: jsonb('metadata'),
-  priceId: text('price_id')
-    .references(() => prices.id)
-    .references(() => prices.id),
+  priceId: text('price_id').references(() => prices.id),
   quantity: integer('quantity'),
   cancelAtPeriodEnd: boolean('cancel_at_period_end'),
   created: timestamp('created', { withTimezone: true, mode: 'string' })
@@ -143,3 +147,15 @@ export const collaborators = pgTable('collaborators', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
 });
+
+//Dont Delete!!!
+export const productsRelations = relations(products, ({ many }) => ({
+  prices: many(prices),
+}));
+
+export const pricesRelations = relations(prices, ({ one }) => ({
+  product: one(products, {
+    fields: [prices.productId],
+    references: [products.id],
+  }),
+}));
