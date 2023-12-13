@@ -7,6 +7,16 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+export const formatPrice = (price: Price) => {
+  const priceString = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: price.currency || undefined,
+    minimumFractionDigits: 0,
+  }).format((price?.unitAmount || 0) / 100);
+
+  return priceString;
+};
+
 export const postData = async ({
   url,
   data,
