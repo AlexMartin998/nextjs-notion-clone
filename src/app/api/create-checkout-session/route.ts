@@ -6,7 +6,7 @@ import { stripe } from '@/lib/stripe';
 import { createOrRetrieveCustomer } from '@/lib/stripe/adminTasks';
 import { getURL } from '@/lib/utils';
 
-/////* Create checkout session
+/////* Create checkout session - Stripe
 export async function POST(request: Request) {
   const { price, quantity = 1, metadata = {} } = await request.json();
   try {
