@@ -377,6 +377,23 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     updateFileContext,
   ]);
 
+  /// receive quill changes
+  useEffect(() => {
+    if (quill === null || socket === null) return;
+
+    const socketHandler = (deltas: any, id: string) => {
+      if (id === fileId) {
+        quill.updateContents(deltas);
+      }
+    };
+
+    socket.on('receive-changes', socketHandler);
+
+    return () => {
+      socket.off('receive-changes', socketHandler);
+    };
+  }, [quill, socket, fileId]);
+
   /// collaborators real time
   useEffect(() => {
     if (!fileId || quill === null) return;
