@@ -394,7 +394,7 @@ const QuillEditor: React.FC<QuillEditorProps> = ({
     };
   }, [quill, socket, fileId]);
 
-  /// collaborators real time
+  /// collaborators real time (supabase)
   useEffect(() => {
     if (!fileId || quill === null) return;
 

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 export const dynamic = 'force-dynamic'; // works with quill
 
 import QuillEditor from '@/components/quill-editor/QuillEditor';
+import { WPDirType } from '@/lib/interfaces';
 import { getWorkspaceDetails } from '@/lib/supabase/queries';
 
 export type WorkspacePageProps = {
@@ -16,7 +17,7 @@ const WorkspacePage: React.FC<WorkspacePageProps> = async ({ params }) => {
   return (
     <div className="relative">
       <QuillEditor
-        dirType="workspace"
+        dirType={WPDirType.workspace}
         fileId={params.workspaceId}
         dirDetails={data[0] || {}}
       />

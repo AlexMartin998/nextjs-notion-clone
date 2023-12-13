@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'; // works with quill
 import { redirect } from 'next/navigation';
 
 import QuillEditor from '@/components/quill-editor/QuillEditor';
+import { WPDirType } from '@/lib/interfaces';
 import { getFileDetails } from '@/lib/supabase/queries';
 
 export type FilePageProps = {
@@ -16,7 +17,7 @@ const FilePage: React.FC<FilePageProps> = async ({ params }) => {
   return (
     <div className="relative">
       <QuillEditor
-        dirType="file"
+        dirType={WPDirType.file}
         fileId={params.fileId}
         dirDetails={data[0] || {}}
       />
