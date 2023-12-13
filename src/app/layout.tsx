@@ -5,6 +5,7 @@ import './globals.css';
 
 import { Toaster } from '@/components/ui/toaster';
 import { CypressProvider } from '@/lib/context/cypress/CypressProvider';
+import { SocketProvider } from '@/lib/context/sockets/SocketProvider';
 import { AuthUserProvider } from '@/lib/context/supabase/user/AuthUserProvider';
 import { ThemeProvider } from '@/lib/providers/next-theme-provider';
 import db from '@/lib/supabase/db';
@@ -29,8 +30,10 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <CypressProvider>
             <AuthUserProvider>
-              {children}
-              <Toaster />
+              <SocketProvider>
+                {children}
+                <Toaster />
+              </SocketProvider>
             </AuthUserProvider>
           </CypressProvider>
         </ThemeProvider>
