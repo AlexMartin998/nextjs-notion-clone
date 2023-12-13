@@ -21,6 +21,7 @@ import {
   updateWorkspace,
 } from '@/lib/supabase/queries';
 import { User, workspace } from '@/lib/supabase/supabase.types';
+import { CypressProfileIcon } from '../icons';
 import { CollaboratorSearch } from '../shared';
 import {
   Avatar,
@@ -31,6 +32,15 @@ import {
   Label,
 } from '../ui';
 import { Alert, AlertDescription } from '../ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../ui/alert-dialog';
 import { ScrollArea } from '../ui/scroll-area';
 import {
   Select,
@@ -138,12 +148,17 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
 
   /// onChange permissions
   const onPermissionsChange = (val: WorkspacesPermissions) => {
-    if (val === WorkspacesPermissions.private) {
-      setOpenAlertMessage(true); // TODO: check lose collaborators?
-    }
-
-    setPermissions(val);
+    if (val === 'private') {
+      setOpenAlertMessage(true);
+    } else setPermissions(val);
   };
+  // const onPermissionsChange = (val: WorkspacesPermissions) => {
+  //   if (val === WorkspacesPermissions.private) {
+  //     setOpenAlertMessage(true); // TODO: check lose collaborators?
+  //   }
+
+  //   setPermissions(val);
+  // };
 
   /// on delete workspace
   const onDeleteWorkspace = async () => {
@@ -156,8 +171,6 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
   };
 
   //////* Collaborators handler
-  /// get all collaborators
-
   /// add collaborators
   const addCollaborator = async (profile: User) => {
     if (!workspaceId) return;
@@ -180,6 +193,16 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
       collaborators.filter(collaborator => collaborator.id !== user.id)
     );
     router.refresh();
+  };
+
+  /// change shared to private and lose collaborators
+  const onClickAlertConfirm = async () => {
+    if (!workspaceId) return;
+    if (collaborators.length > 0) {
+      await removeCollaborators(collaborators, workspaceId);
+    }
+    setPermissions(WorkspacesPermissions.private);
+    setOpenAlertMessage(false);
   };
 
   /////* payments
@@ -341,7 +364,7 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
           </div>
         )}
 
-        {/* ====== Alerts ====== */}
+        {/* ====== Delete workspace ====== */}
         <Alert variant={'destructive'} className="mt-3">
           <AlertDescription>
             Warning! deleting you workspace will permanantly delete all data
@@ -358,10 +381,61 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
           </Button>
         </Alert>
 
-        {/* --- Alerts --- */}
+        {/* ====== Profile ====== */}
         <p className="flex items-center gap-2 mt-6">
           <UserIcon size={20} /> Profile
         </p>
+        <Separator />
+
+        <div className="flex items-center">
+          <Avatar>
+            <AvatarImage src={''} />
+            <AvatarFallback>
+              <CypressProfileIcon />
+            </AvatarFallback>
+          </Avatar>
+
+          {/* --- Upload Profile Image --- */}
+          <div className="flex flex-col ml-6">
+            <small className="text-muted-foreground cursor-not-allowed">
+              {user ? user.email : ''}
+            </small>
+            <Label
+              htmlFor="profilePicture"
+              className="text-sm text-muted-foreground"
+            >
+              Profile Picture
+            </Label>
+            <Input
+              name="profilePicture"
+              type="file"
+              accept="image/*"
+              placeholder="Profile Picture"
+              disabled={uploadingProfilePic}
+            />
+          </div>
+        </div>
+
+        {/* ====== Alert Dialog to confirm the change to private (lose collabs) ====== */}
+        <AlertDialog open={openAlertMessage}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDescription>
+                Changing a Shared workspace to a Private workspace will remove
+                all collaborators permanantly.
+              </AlertDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setOpenAlertMessage(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={onClickAlertConfirm}>
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </>
     </div>
   );
