@@ -5,13 +5,13 @@ type State = {
 };
 
 type Action = {
-  setSubscriptionModalOpen: (value: boolean) => void;
+  setSubscriptionModalOpen: () => void;
 };
 
 export const useUiStore = create<State & Action>()((set, get) => ({
-  isSubscriptionModalOpen: false,
+  isSubscriptionModalOpen: !false,
 
-  setSubscriptionModalOpen: (value: boolean) => {
-    set({ isSubscriptionModalOpen: value });
+  setSubscriptionModalOpen: () => {
+    set({ isSubscriptionModalOpen: true });
   },
 }));

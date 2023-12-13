@@ -4,11 +4,11 @@ import { PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { useSubscriptionModal } from '@/lib/context/ui/subscription-modal-provider';
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
 import useSupabaseRealtime from '@/lib/hooks/useSupabaseRealtime';
 import { WPListType } from '@/lib/interfaces';
-import { useUiStore } from '@/lib/store/ui/ui';
 import { createFolder } from '@/lib/supabase/queries';
 import { Folder } from '@/lib/supabase/supabase.types';
 import { TooltipComponent } from '../shared';
@@ -26,7 +26,6 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
   workspaceId,
 }) => {
   useSupabaseRealtime();
-  const setOpen = useUiStore(s => s.setSubscriptionModalOpen);
 
   const {
     state,
@@ -34,9 +33,11 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
     setFolders: setFoldersContext,
     addFolder,
   } = useCypress();
+  const { setOpen } = useSubscriptionModal();
   const { toast } = useToast();
-  const [folders, setFolders] = useState(workspaceFolders);
   const { subscription } = useAuthUser();
+
+  const [folders, setFolders] = useState(workspaceFolders);
 
   ////* real time upds
 
@@ -61,7 +62,7 @@ const FoldersDropdownList: React.FC<FoldersDropdownListProps> = ({
 
   ////* handlers
   const addFolderHandler = async () => {
-    // if (folders.length >= 3 && !subscription) return setOpen(true);
+    if (folders.length >= 3 && !subscription) return setOpen(true);
 
     // create folder
     const newFolder: Folder = {

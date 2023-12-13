@@ -15,13 +15,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
+import { useSubscriptionModal } from '@/lib/context/ui/subscription-modal-provider';
 import { useAuthUser } from '@/lib/hooks/useAuthUser';
 import { useCypress } from '@/lib/hooks/useCypress';
 import {
   SubscriptionStatusEnum,
   WorkspacesPermissions,
 } from '@/lib/interfaces';
-import { useUiStore } from '@/lib/store/ui/ui';
 import {
   addCollaborators,
   deleteWorkspace,
@@ -76,11 +76,10 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
     updateWorkspace: updateWorkspaceContext,
     deleteWorkspace: deleteWorkspaceContext,
   } = useCypress();
-  const setOpen = useUiStore(s => s.setSubscriptionModalOpen);
   const { user, subscription } = useAuthUser();
   const { toast } = useToast();
+  const { setOpen } = useSubscriptionModal();
 
-  // const { open, setOpen } = useSubscriptionModal();
   const [permissions, setPermissions] = useState(WorkspacesPermissions.private);
   const [collaborators, setCollaborators] = useState<User[] | []>([]);
   const [openAlertMessage, setOpenAlertMessage] = useState(false); // confirm changes modal
@@ -219,7 +218,6 @@ const SettingsForm: React.FC<SettingsFormProps> = () => {
 
   /// get subscription
   const redirectToCustomerPortal = async () => {
-    console.log(`first`);
     setLoadingPortal(true);
     try {
       const { url, error } = await postData({
