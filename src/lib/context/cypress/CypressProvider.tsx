@@ -14,6 +14,7 @@ import {
   DeleteFileProps,
   DeleteFolderProps,
   SetMyWorkspacesProps,
+  SetWorkspaceProps,
   UpdateFileProps,
   UpdateFolderProps,
   UpdateWorkspaceProps,
@@ -97,6 +98,13 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
           ...collaboratingWorkspaces,
         ].map(workspace => ({ ...workspace, folders: [] })),
       },
+    });
+  };
+
+  const setWorkspaces = ({ workspaces }: SetWorkspaceProps) => {
+    dispatch({
+      type: CypressActionType.setWorkspaces,
+      payload: { workspaces: workspaces },
     });
   };
 
@@ -195,6 +203,7 @@ export const CypressProvider = ({ children }: CypressProviderProps) => {
         folderId,
 
         setMyWorkspaces,
+        setWorkspaces,
         updateWorkspace,
         deleteWorkspace,
         setFolders,

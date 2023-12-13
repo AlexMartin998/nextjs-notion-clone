@@ -3,13 +3,14 @@
 import { createContext } from 'react';
 
 import { FoldersDropdownListProps } from '@/components/sidebar/FoldersDropdownList';
-import { CypressState } from './CypressProvider';
+import { AppWorkspacesType, CypressState } from './CypressProvider';
 import {
   AddFileProps,
   AddFolderProps,
   DeleteFileProps,
   DeleteFolderProps,
   SetMyWorkspacesProps,
+  SetWorkspaceProps,
   UpdateFileProps,
   UpdateFolderProps,
   UpdateWorkspaceProps,
@@ -27,6 +28,7 @@ interface CypressContextProps {
     sharedWorkspaces,
     collaboratingWorkspaces,
   }: SetMyWorkspacesProps) => void;
+  setWorkspaces: (props: SetWorkspaceProps) => void;
   updateWorkspace: (props: UpdateWorkspaceProps) => void;
   deleteWorkspace: (workspaceId: string) => void;
 
