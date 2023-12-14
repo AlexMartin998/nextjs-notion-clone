@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Cypress | Notion Clone
+
+This is a Next.js project bootstrapped with `pnpm create next-app --typescript`.
+
+## Features
+
+⚡️ Next.js v14\
+⚡️ Supabase\
+⚡️ Drizzle ORM\
+⚡️ Socker.IO\
+⚡️ TailwindCSS\
+⚡️ Shadcn UI\
+⚡ Docker
 
 ## Getting Started
 
-First, run the development server:
+### .env
+
+Create `.env` file based on `.env.template`
+
+### Run the development server with Docker 🐳 :
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# install pnpm
+npm i -g pnpm
+
+# install deps
+pnpm i
+
+# run docker contaniers
+docker compose -f docker-compose.dev.yml up --build
+
+# run dev server
+pnpm run dev
+
+# stop and remove containers & networks
+docker compose -f docker-compose.dev.yml down
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Run the production server with Docker 🐳 :
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# run db
+docker compose -f docker-compose.dev.yml up --build
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+# Executing SEED: HTTP Get request
+curl http://localhost:3000/api/seed
 
-## Learn More
+# docker compose
+docker compose up --build -d
 
-To learn more about Next.js, take a look at the following resources:
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## View demo
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+To see the real-time behavior you can log in with:
 
-## Deploy on Vercel
+- User: `adrian@test.com` and password `123123`
+- User: `beliv80185@nexxterp.com` and password `123123`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<a href="https://cypress-clone-notion-production.up.railway.app" target="_blank">Demo</a>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Screenshots
+
+![Admi](.screenshots/02_file_collabs.png)
